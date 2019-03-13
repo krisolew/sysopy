@@ -2,7 +2,7 @@
 #include<malloc.h>
 #include<stdlib.h>
 
-char **create_table(char size)
+char **create_table(int size)
 {
     return calloc( size, sizeof(char *));
 }
