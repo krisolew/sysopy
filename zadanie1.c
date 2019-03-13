@@ -1,46 +1,62 @@
 #include<stdio.h>
-#include<malloc.h>
 #include<stdlib.h>
+#include<unistd.h>
+#include"library.h"
+#include<string.h>
+#include<time.h>
+#include<sys/times.h>
 
-char **create_table(char size){
-    return malloc(size * sizeof(char *));
-}
+int main(int argc, char* argv[]){
 
-void find(const char * dir_name, const char * file_name, const char * tmp){
-    char * command = malloc(50 * sizeof(char));
+    int opt;
+    int index = 1, size, current_index=0, delete_index;
+    char *dir, *file, *tmp_file;
+    char ** table;
 
-    sprintf(command,"find \"%s\" -name \"%s\" > \"%s\"",dir_name, file_name, tmp);
-    system(command);
-}
-
-void save(char** table, int current_index)
-{
-    FILE* fp = fopen("tmp.txt", "r");
-    fseek(fp, 0L, SEEK_END);
-    int res = ftell(fp);
-    fclose(fp);
-    
-    char *pointer = calloc( (size_t) (res + 1), sizeof(char));
-
-    fp = fopen("tmp.txt", "r");
-    char ch;
-    int i=0;
-    while((ch = fgetc(fp)) != EOF )
+    while ((opt=getopt(argc,argv,"c:f:d:")) != -1)
     {
-        pointer[i]=ch;
-        i++;
+        index++;
+        switch(opt)
+        {
+            case 'c':
+                size = (int) optarg[0] - '0';
+                table = create_table(size);
+                break;
+            case 'f':
+        
+                dir = strdup(argv[index++]);
+                file = strdup(argv[index++]);
+                tmp_file = strdup(argv[index]);
+
+                find(dir, file, tmp_file);
+                save(table, current_index);
+                break;
+            case 'd':
+                delete_index = (int) optarg[0] - '0';
+                delete(delete_index, table, size);
+                break;
+        }
+        index++;
     }
 
-    table[current_index] = pointer;
-}
-
-int main(){
-
-    find("katalog", "tekst2.txt", "tmp.txt");
-    char ** table = create_table(20);
-    int current_index=0;
-    save(table, current_index);
-
-    printf("%c", table[0][2]);
+    // char ch;
+    // int i = 0;
+    // while ( (ch = dir[i]) != '\0' ){
+    //     printf("%c", ch);
+    //     i++;
+    // }
+    // printf("\n");
+    // i = 0;
+    // while ( (ch = file[i]) != '\0' ){
+    //     printf("%c", ch);
+    //     i++;
+    // }
+    //     printf("\n");
+    // i = 0;
+    // while ( (ch = tmp_file[i]) != '\0' ){
+    //     printf("%c", ch);
+    //     i++;
+    // }    printf("\n");
+    
     return 0;
 }
