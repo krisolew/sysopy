@@ -7,6 +7,7 @@ static:
 clear:
 	rm -f *.o main
 	rm -f *.so*
+	rm -f tmp.txt
 
 dynamic:
 	gcc -Wall -fPIC -c library.c

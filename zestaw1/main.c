@@ -16,18 +16,13 @@ int main(int argc, char* argv[]){
 
     struct timespec start, stop;
     double duration;
-    clock_t start3, stop3;
     static struct tms st_cpu;
     static struct tms en_cpu;
 
-    clock_t start2, end;
-    double cpu_time_used;
-
-    start2 = clock();
-
     clock_gettime(CLOCK_REALTIME, &start);
-    start3 = times(&st_cpu);
+    times(&st_cpu);
 
+    int liczba_opcji = 0;
     while ((opt=getopt(argc,argv,"c:f:d:")) != -1)
     {
         index++;
@@ -35,14 +30,13 @@ int main(int argc, char* argv[]){
         {
             case 'c':
                 size = 0;
+                i = 0;
                 while (optarg[i]!='\0')
                 {
                     size*=10;
                     size += (int) optarg[i] - '0';
                     i++;
                 }
-
-                printf("%d \n", size);
                 
                 table = create_table(size);
                 break;
@@ -58,27 +52,30 @@ int main(int argc, char* argv[]){
                 save(table,current_index);
                 break;
             case 'd':
-                delete_index = (int) optarg[0] - '0';
+                delete_index = 0;
+                i = 0;
+                while (optarg[i]!='\0')
+                {
+                    delete_index*=10;
+                    delete_index += (int) optarg[i] - '0';
+                    i++;
+                }
+
                 delete(delete_index, table, size);
                 break;
         }
         index++;
+        liczba_opcji++;
     }
 
-    stop3 = times(&en_cpu);
+    times(&en_cpu);
     clock_gettime(CLOCK_REALTIME, &stop);
-
-    end = clock();
-    cpu_time_used = ((double) (end - start2)) / CLOCKS_PER_SEC;
 
     duration = stop.tv_sec - start.tv_sec + (stop.tv_nsec - start.tv_nsec) * 1.0/1000000000;
     printf ("Real time %lf s\n", duration);
     printf ("Cpu user time %Lf s\n", (long double)(en_cpu.tms_utime - st_cpu.tms_utime)/sysconf(_SC_CLK_TCK));
     printf ("Cpu system time %Lf s\n", (long double)(en_cpu.tms_stime - st_cpu.tms_stime)/sysconf(_SC_CLK_TCK));
-    printf("Real: %jd \n", stop3 - start3);
-    printf("System: %f \n", (double) en_cpu.tms_stime - st_cpu.tms_stime);
-    printf("User: %f \n", (double) en_cpu.tms_utime - st_cpu.tms_utime);
-    printf("%f \n", cpu_time_used);
+    printf ("Liczba przekazanych opcji: %d\n", liczba_opcji);
     
     return 0;
 }
