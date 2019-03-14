@@ -1,0 +1,485 @@
+static
+
+polecenie:  -c  2000000 
+wywołanie funkcji create_table: 
+Real time 0.000018 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home a*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.103054 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  2000 
+wywołanie funkcji create_table: 
+Real time 0.000023 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /bin a*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.004602 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  200000 
+wywołanie funkcji create_table: 
+Real time 0.000018 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /etc c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.019823 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  2000000 
+wywołanie funkcji create_table: 
+Real time 0.000017 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home a*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.102616 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  2000 
+wywołanie funkcji create_table: 
+Real time 0.000019 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /bin a*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.004548 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000003 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  200000 
+wywołanie funkcji create_table: 
+Real time 0.000010 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /etc c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.017119 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  30 
+wywołanie funkcji create_table: 
+Real time 0.000040 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.103100 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.102029 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.096542 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.097952 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.097388 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.099293 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.097886 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000003 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.095168 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.098315 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.094454 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.098632 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.096321 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+--------------------------------------------------------------------------
+
+shared
+
+polecenie:  -c  2000000 
+wywołanie funkcji create_table: 
+Real time 0.000017 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home a*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.096733 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  2000 
+wywołanie funkcji create_table: 
+Real time 0.000015 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /bin a*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.003766 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  200000 
+wywołanie funkcji create_table: 
+Real time 0.000012 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /etc c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.020520 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  2000000 
+wywołanie funkcji create_table: 
+Real time 0.000019 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home a*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.104462 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000005 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  2000 
+wywołanie funkcji create_table: 
+Real time 0.000023 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /bin a*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.004685 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000006 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  200000 
+wywołanie funkcji create_table: 
+Real time 0.000017 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /etc c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.019850 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000007 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c  30 
+wywołanie funkcji create_table: 
+Real time 0.000010 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.120527 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000007 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.095898 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.095556 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000006 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.096015 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.095616 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000003 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.101226 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000006 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.117698 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000005 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.097444 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000004 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.096528 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000005 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.096969 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000005 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.095490 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000005 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -f /home c*.txt tmp.txt 
+wywołanie funkcji find: 
+Real time 0.096175 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -d 0
+wywołanie funkcji delete: 
+Real time 0.000005 s
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+

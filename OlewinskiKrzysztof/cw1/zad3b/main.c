@@ -5,12 +5,15 @@
 #include<string.h>
 #include<time.h>
 #include<sys/times.h>
-#define PLIK "raport2.txt"
+#include <dlfcn.h>
+#define PLIK "results3b.txt"
+
+
 
 struct timespec start, stop;
 static struct tms st_cpu;
 static struct tms en_cpu;
- 
+
 void measure_start_time()
 {
     clock_gettime(CLOCK_REALTIME, &start);
@@ -25,8 +28,8 @@ void measure_stop_time()
 
 void print_and_save_times(char parametr)
 {
-    FILE* file = fopen(PLIK,"a");
-    
+    FILE* file = fopen(PLIK,"a+");
+
     switch(parametr){
         case 'f':
             printf("wywołanie funkcji find: \n");
@@ -58,14 +61,24 @@ void print_and_save_times(char parametr)
     fclose(file);
 }
 
+
 int main(int argc, char* argv[]){
 
+#ifdef DLL
+    void *handle = dlopen("./liblibrary.so", RTLD_LAZY);
+
+    char ** (*create_table)(int) = dlsym(handle,"create_table");
+    void (*find)(const char *, const char * , const char *)= dlsym(handle,"find");
+    void (*save)(char**, int) = dlsym(handle,"save");
+    void (*delete1)(int, char **, int) = dlsym(handle,"delete1");
+#endif
+
     int opt;
-    int index = 1, size, current_index=0, delete_index;
+    int index = 1, size=0, current_index=0, delete_index=0;
     char *dir, *file, *tmp_file;
-    char **table;
+    char **table=create_table(size);
     int i=0;
-    
+
     while ((opt=getopt(argc,argv,"c:f:d:")) != -1)
     {
         index++;
@@ -80,18 +93,33 @@ int main(int argc, char* argv[]){
                     size += (int) optarg[i] - '0';
                     i++;
                 }
-                
+
                 measure_start_time();
                 table = create_table(size);
                 measure_stop_time();
+
+                FILE* file1 = fopen(PLIK,"a");
+                fprintf(file1, "polecenie: ");
+                for(int i = 1; i < 3; i++){
+                    fprintf(file1, " %s ", argv[i]);
+                }
+                fprintf(file1, "\n");
+                fclose(file1);
+
                 print_and_save_times(opt);
                 break;
 
             case 'f':
-        
+
                 dir = strdup(argv[index++]);
                 file = strdup(argv[index++]);
                 tmp_file = strdup(argv[index]);
+
+                file1 = fopen(PLIK,"a");
+                fprintf(file1, "polecenie: ");
+                fprintf(file1, " -f %s %s %s ", dir, file, tmp_file);
+                fprintf(file1, "\n");
+                fclose(file1);
 
                 measure_start_time();
                 find(dir, file, tmp_file);
@@ -111,13 +139,24 @@ int main(int argc, char* argv[]){
                     i++;
                 }
 
+                file1 = fopen(PLIK,"a");
+                fprintf(file1, "polecenie: ");
+                fprintf(file1, " -d %d", delete_index);
+                fprintf(file1, "\n");
+                fclose(file1);
+
                 measure_start_time();
-                delete(delete_index, table, size);
+                delete1(delete_index, table, size);
                 measure_stop_time();
                 print_and_save_times(opt);
                 break;
         }
         index++;
     }
+#ifdef DLL
+    dlclose(handle);
+#endif
     return 0;
+
 }
+
