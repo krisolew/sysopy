@@ -10,9 +10,11 @@ static: clear
 clear:
 	rm -f *.o main
 	rm -f *.so*
+	rm -f *.a
 	rm -f tmp.txt
 
 shared: clear
+	export LD_LIBRARY_PATH=.:D_LIBRARY_PATH
 	gcc -Wall -fPIC -c library.c
 	gcc -Wall -shared -Wl,-soname,liblibrary.so.1 -o liblibrary.so.1.0.1 library.o -lc
 	ln -s liblibrary.so.1.0.1 liblibrary.so.1

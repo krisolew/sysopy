@@ -1,3 +1,4 @@
+
 static: clear
 	gcc -c -Wall library.c
 	ar rcs library.a library.o
@@ -5,6 +6,8 @@ static: clear
 
 clear:
 	rm -f *.o 
+	rm -f *.so*
+	rm -f *.a
 
 shared: clear
 	gcc -Wall -fPIC -c library.c

@@ -11,6 +11,7 @@ static: clear
 clear:
 	rm -f *.o main
 	rm -f *.so*
+	rm -f *.a
 	rm -f tmp.txt
 
 shared: clear
