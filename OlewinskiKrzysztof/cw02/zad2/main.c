@@ -8,37 +8,10 @@
 #include<stdlib.h>
 #include<ftw.h>
 #include<dirent.h>
-
+#include<string.h>
 
 char * operator;
 time_t t;
-
-void read_file(struct dirent * file){
-
-    printf("%s\n", file->d_name);
-}
-
-void search2(char *path){
-    DIR * stream = opendir(path);
-    struct dirent *file;
-    long int num_of_start_dir = telldir(stream);
-    long int num_of_dir = num_of_start_dir;
-    printf("%ld", num_of_dir);
-
-    do{
-        while((file = readdir(stream)) != NULL){
-            read_file(file);
-        }
-
-        seekdir(stream, num_of_dir);
-        num_of_dir = telldir(stream);
-        printf("%ld", num_of_dir);
-        
-    } while (num_of_dir != num_of_start_dir);
-
-    closedir(stream);
-}
-
 
 bool compare_times(time_t file_date)
 {
@@ -105,8 +78,7 @@ int main(int argc, char* argv[])
     strptime(date, "%d.%m.%Y", &tm);
     t = mktime(&tm);
 
-    search2(director);
-    
+    search(director);
 
     return 0;
 }
