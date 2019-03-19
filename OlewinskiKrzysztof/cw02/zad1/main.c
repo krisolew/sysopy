@@ -14,11 +14,7 @@ void generate(int size, int number, char * name){
         printf("nie mozna utworzyc\n");
         return;
     };
-<<<<<<< HEAD
     system("chmod 775 /home/krisolew/pierwszy.txt");
-=======
-    system("chmod 775 /home/anqe/pierwszy.txt");
->>>>>>> edb8f3e80325810e9b4033793b7ff323a9d5fb8c
     int fp = open(name, O_RDWR | O_CREAT);
     int j;
     int i;
@@ -125,13 +121,9 @@ void copy_sys(){
 
 int main() {
     srand(time(NULL));
-<<<<<<< HEAD
-    generate(20, 3, "/home/krisolew/pierwszy.txt");
-    sort_sys(20, "/home/krisolew/pierwszy.txt");
-=======
-    generate(20, 50, "/home/anqe/pierwszy.txt");
-    //sort_sys(20, "/home/anqe/pierwszy.txt", 50);
-    sort_lib(20, "/home/anqe/pierwszy.txt", 50);
->>>>>>> edb8f3e80325810e9b4033793b7ff323a9d5fb8c
+    generate(20, 30, "/home/krisolew/pierwszy.txt");
+    sort_sys(20, "/home/krisolew/pierwszy.txt", 30);
+    generate(20, 30, "/home/krisolew/drugi.txt");
+    sort_lib(20, "/home/krisolew/pierwszy.txt", 30);
     return 0;
 }
