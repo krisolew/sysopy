@@ -10,6 +10,7 @@
 #include<dirent.h>
 #include<string.h>
 #include<ctype.h>
+#include <errno.h>
 
 char * operator;
 time_t t;
@@ -54,7 +55,7 @@ void read_file(char * full_path, struct stat status)
         else if (S_ISSOCK(status.st_mode)) printf("sock\n");
 
         //rozmiar
-        printf("rozmiar: %d bajtow\n", status.st_size);
+        printf("rozmiar: %ld bajtow\n", status.st_size);
 
         struct tm *tm;
         char buf[20];
@@ -87,7 +88,11 @@ void search(char *path)
 
         struct stat status;
         char *full_path = build_file_path(file,path);
-        lstat(full_path, &status);
+
+        if(lstat(full_path, &status)==-1){
+            perror("Something went wrong with lstat: " );
+            errno = 0;
+        }
         read_file(full_path, status);
 
         if (S_ISDIR(status.st_mode))
@@ -97,7 +102,13 @@ void search(char *path)
         free(full_path);
     }
 
-    closedir(stream);
+    if(errno != 0){
+        perror("Something went wrong with readdir: " );
+    }
+
+    if(closedir(stream)==-1){
+        perror("Something went wrong when closing a stream: " );
+    }
 }
 
 bool is_operator_correct()
