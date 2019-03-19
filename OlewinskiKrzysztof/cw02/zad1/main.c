@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <malloc.h>
 #include <stdlib.h>
-
+#include <time.h>
 
 
 void generate(int size, int number, char * name){
@@ -12,7 +12,7 @@ void generate(int size, int number, char * name){
         printf("nie mozna utworzyc\n");
         return;
     };
-    system("chmod 775 /home/anqe/sysopy/pierwszy.txt");
+    system("chmod 775 /home/pierwszy.txt");
     int fp = open(name, O_RDWR | O_CREAT);
     int j;
     int i;
@@ -49,7 +49,8 @@ void copy_sys(){
 }
 
 int main() {
-    generate(20, 3, "/home/anqe/sysopy/pierwszy.txt");
-    sort_sys(20, "/home/anqe/sysopy/pierwszy.txt");
+    srand(time(NULL));
+    generate(20, 3, "/home/pierwszy.txt");
+    sort_sys(20, "/home/pierwszy.txt");
     return 0;
 }
