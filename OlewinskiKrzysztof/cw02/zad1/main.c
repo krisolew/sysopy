@@ -12,7 +12,7 @@ void generate(int size, int number, char * name){
         printf("nie mozna utworzyc\n");
         return;
     };
-    system("chmod 775 /home/pierwszy.txt");
+    system("chmod 775 /home/krisolew/pierwszy.txt");
     int fp = open(name, O_RDWR | O_CREAT);
     int j;
     int i;
@@ -50,7 +50,7 @@ void copy_sys(){
 
 int main() {
     srand(time(NULL));
-    generate(20, 3, "/home/pierwszy.txt");
-    sort_sys(20, "/home/pierwszy.txt");
+    generate(20, 3, "/home/krisolew/pierwszy.txt");
+    sort_sys(20, "/home/krisolew/pierwszy.txt");
     return 0;
 }
