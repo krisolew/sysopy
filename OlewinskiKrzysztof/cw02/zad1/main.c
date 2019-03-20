@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#define PLIK "/home/krisolew/sysopy/OlewinskiKrzysztof/cw02/zad1/wyniki.txt"
+#define PLIK "wyniki.txt"
 
 static struct tms st_cpu;
 static struct tms en_cpu;
@@ -98,7 +98,7 @@ void sort_sys(int size, char * name, int l_linii){
     unsigned char current = 0;
 
 
-    for(unsorted_index; unsorted_index < l_linii; unsorted_index++) {
+    for(; unsorted_index < l_linii; unsorted_index++) {
         for (i = unsorted_index; i < l_linii; i++) {
             lseek(fp, i * (size), SEEK_SET);
             read(fp, &current, sizeof(char));
@@ -108,18 +108,20 @@ void sort_sys(int size, char * name, int l_linii){
                 minimum_index = i;
             }
         }
+        if(minimum_index!=unsorted_index){
 
-        lseek(fp, unsorted_index * (size), SEEK_SET);
-        read(fp, buf, (size) *sizeof(char));
+            lseek(fp, unsorted_index * (size), SEEK_SET);
+            read(fp, buf, (size) *sizeof(char));
 
-        lseek(fp, minimum_index * (size), SEEK_SET);
-        read(fp, minimum_buf, (size) *sizeof(char));
+            lseek(fp, minimum_index * (size), SEEK_SET);
+            read(fp, minimum_buf, (size) *sizeof(char));
 
-        lseek(fp, unsorted_index * (size), SEEK_SET);
-        write(fp, minimum_buf, (size) *sizeof(char));
+            lseek(fp, unsorted_index * (size), SEEK_SET);
+            write(fp, minimum_buf, (size) *sizeof(char));
 
-        lseek(fp, minimum_index * (size), SEEK_SET);
-        write(fp, buf, (size) *sizeof(char));
+            lseek(fp, minimum_index * (size), SEEK_SET);
+            write(fp, buf, (size) *sizeof(char));
+        }
 
         minimum = 255;
 
@@ -141,7 +143,7 @@ void sort_lib(int size, char * name, int l_linii){
     unsigned char current = 0;
 
 
-    for(unsorted_index; unsorted_index < l_linii; unsorted_index++) {
+    for(; unsorted_index < l_linii; unsorted_index++) {
         for (i = unsorted_index; i < l_linii; i++) {
             fseek(fp, i * (size), 0);
             fread(&current, sizeof(char), 1, fp);
@@ -151,18 +153,20 @@ void sort_lib(int size, char * name, int l_linii){
                 minimum_index = i;
             }
         }
+        if(minimum_index!=unsorted_index){
 
-        fseek(fp, unsorted_index * (size), 0);
-        fread(buf, sizeof(char), size , fp);
+            fseek(fp, unsorted_index * (size), 0);
+            fread(buf, sizeof(char), size , fp);
 
-        fseek(fp, minimum_index * (size), 0);
-        fread(minimum_buf, sizeof(char), size, fp);
+            fseek(fp, minimum_index * (size), 0);
+            fread(minimum_buf, sizeof(char), size, fp);
 
-        fseek(fp, unsorted_index * (size), 0);
-        fwrite(minimum_buf, sizeof(char), (size), fp);
+            fseek(fp, unsorted_index * (size), 0);
+            fwrite(minimum_buf, sizeof(char), (size), fp);
 
-        fseek(fp, minimum_index * (size), 0);
-        fwrite(buf, sizeof(char), (size), fp);
+            fseek(fp, minimum_index * (size), 0);
+            fwrite(buf, sizeof(char), (size), fp);
+        }
 
         minimum = 255;
 
@@ -173,7 +177,13 @@ void sort_lib(int size, char * name, int l_linii){
 }
 
 void copy_sys(int size, int buffer_size, char * from, char * to){
-    printf("sys\n");
+    
+    int fp = open(from, O_RDONLY);
+    int res = lseek(fp, 0, SEEK_END);
+    close(fp);
+
+    if(res<size) size = res;
+
     int from1 = open(from, O_RDWR);
     int to1 = open(to,O_RDWR | O_APPEND);
     char * buf = calloc((size_t) buffer_size, sizeof(char));
@@ -192,7 +202,14 @@ void copy_sys(int size, int buffer_size, char * from, char * to){
 }
 
 void copy_lib(int size, int buffer_size, char * from, char * to){
-    printf("lib\n");
+
+    FILE* fp = fopen(from, "r");
+    fseek(fp, 0, SEEK_END);
+    int res = ftell(fp);
+    fclose(fp);
+
+    if(res<size) size = res;
+
     FILE *from1 = fopen(from, "r");
     FILE *to1 = fopen(to, "a+");
     char * buf = calloc((size_t) buffer_size, sizeof(char));
@@ -257,21 +274,18 @@ int main(int argc, char* argv[]) {
                 generate(block_size, number_of_blocks, plik1);
                 measure_stop_time();
 
-                // FILE* file1 = fopen(PLIK,"a");
-                // fprintf(file1, "polecenie: ");
-                // for(int i = 1; i < 3; i++){
-                //     fprintf(file1, " -g %s %d %d ", plik1, number_of_blocks, block_size);
-                // }
-                // fprintf(file1, "\n");
-                // fclose(file1);
+                FILE* file1 = fopen(PLIK,"a");
+                fprintf(file1, "polecenie: ");
+                fprintf(file1, " -g %s %d %d ", plik1, number_of_blocks, block_size);
+                fprintf(file1, "\n");
+                fclose(file1);
 
-                // print_and_save_times(opt);
+                print_and_save_times(opt);
                 break;
 
             case 's':
 
                 plik1 = strdup(argv[index++]);
-                printf("%s\n", plik1);
                 number_of_blocks = 0;
                 while (argv[index][i]!='\0')
                 {
@@ -280,7 +294,6 @@ int main(int argc, char* argv[]) {
                     i++;
                 }
 
-                printf("%d\n", number_of_blocks);
                 index++;
                 i=0;
                 block_size = 0;
@@ -290,26 +303,25 @@ int main(int argc, char* argv[]) {
                     block_size += (int) argv[index][i] - '0';
                     i++;
                 }
-                printf("%d\n", block_size);
 
                 type = strdup(argv[++index]);
-                printf("%s\n", type);
-                
-                // file1 = fopen(PLIK,"a");
-                // fprintf(file1, "polecenie: ");
-                // fprintf(file1, " -s %s %d %d %s ", plik1, number_of_blocks, block_size, type);
-                // fprintf(file1, "\n");
-                // fclose(file1);
 
                 measure_start_time();
-                if (strcmp(type, "sys")) sort_sys(block_size, plik1, number_of_blocks);
-                else if (strcmp(type, "lib")) sort_lib(block_size, plik1, number_of_blocks);
+                if (strcmp(type, "sys")==0) sort_sys(block_size, plik1, number_of_blocks);
+                else if (strcmp(type, "lib")==0) sort_lib(block_size, plik1, number_of_blocks);
                 else{
                     printf("wrong type argument %s\n", type);
                     return -1;
                 }
                 measure_stop_time();
-                //print_and_save_times(opt);
+
+                file1 = fopen(PLIK,"a");
+                fprintf(file1, "polecenie: ");
+                fprintf(file1, " -s %s %d %d %s ", plik1, number_of_blocks, block_size, type);
+                fprintf(file1, "\n");
+                fclose(file1);
+
+                print_and_save_times(opt);
 
                 break;
 
@@ -336,12 +348,6 @@ int main(int argc, char* argv[]) {
 
                 type = strdup(argv[++index]);
 
-                // file1 = fopen(PLIK,"a");
-                // fprintf(file1, "polecenie: ");
-                // fprintf(file1, " -c %s %s %d %d %s ", plik1, plik2, number_of_blocks, block_size, type);
-                // fprintf(file1, "\n");
-                // fclose(file1);
-
                 measure_start_time();
                 if (strcmp(type, "sys")==0) copy_sys(block_size*number_of_blocks, buffer_size, plik1, plik2 );
                 else if (strcmp(type, "lib")==0) copy_lib(block_size*number_of_blocks, buffer_size, plik1, plik2);
@@ -350,7 +356,14 @@ int main(int argc, char* argv[]) {
                     return -1;
                 }
                 measure_stop_time();
-                //print_and_save_times(opt);
+
+                file1 = fopen(PLIK,"a");
+                fprintf(file1, "polecenie: ");
+                fprintf(file1, " -c %s %s %d %d %s ", plik1, plik2, number_of_blocks, block_size, type);
+                fprintf(file1, "\n");
+                fclose(file1);
+
+                print_and_save_times(opt);
                 break;
         }
         index++;

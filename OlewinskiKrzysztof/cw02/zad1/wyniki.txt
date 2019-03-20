@@ -1,15 +1,366 @@
-polecenie:  -g /home/krisolew/anqe.txt 10 20  -g /home/krisolew/anqe.txt 10 20 
+//****SORT TEST 1****//
+polecenie:  -g test.txt 2000 1 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.010000 s
+
+polecenie:  -s test.txt 2000 1 sys 
+wywołanie funkcji sort: 
+Cpu user time 0.720000 s
+Cpu system time 2.680000 s
+
+polecenie:  -s test1.txt 2000 1 lib 
+wywołanie funkcji sort: 
+Cpu user time 0.540000 s
+Cpu system time 0.910000 s
+
+polecenie:  -g test.txt 2000 4 
 wywołanie funkcji generate 
 Cpu user time 0.000000 s
 Cpu system time 0.000000 s
 
-polecenie:  -g /home/krisolew/anqe.txt 10 20  -g /home/krisolew/anqe.txt 10 20 
+polecenie:  -s test.txt 2000 4 sys 
+wywołanie funkcji sort: 
+Cpu user time 0.660000 s
+Cpu system time 2.380000 s
+
+polecenie:  -s test1.txt 2000 4 lib 
+wywołanie funkcji sort:
+Cpu user time 0.520000 s
+Cpu system time 0.900000 s
+
+polecenie:  -g test.txt 2000 512 
 wywołanie funkcji generate 
+Cpu user time 0.010000 s
+Cpu system time 0.010000 s
+
+polecenie:  -s test.txt 2000 512 sys 
+wywołanie funkcji sort: 
+Cpu user time 0.800000 s
+Cpu system time 2.790000 s
+
+polecenie:  -s test1.txt 2000 512 lib 
+wywołanie funkcji sort: 
+Cpu user time 0.640000 s
+Cpu system time 1.410000 s
+
+polecenie:  -g test.txt 2000 1024 
+wywołanie funkcji generate 
+Cpu user time 0.040000 s
+Cpu system time 0.010000 s
+
+polecenie:  -s test.txt 2000 1024 sys 
+wywołanie funkcji sort: 
+Cpu user time 0.730000 s
+Cpu system time 3.010000 s
+
+polecenie:  -s test1.txt 2000 1024 lib 
+wywołanie funkcji sort: 
+Cpu user time 0.620000 s
+Cpu system time 1.930000 s
+
+polecenie:  -g test.txt 2000 4096 
+wywołanie funkcji generate 
+Cpu user time 0.170000 s
+Cpu system time 0.020000 s
+
+polecenie:  -s test.txt 2000 4096 sys 
+wywołanie funkcji sort: 
+Cpu user time 0.730000 s
+Cpu system time 3.380000 s
+
+polecenie:  -s test1.txt 2000 4096 lib 
+wywołanie funkcji sort: 
+Cpu user time 1.070000 s
+Cpu system time 4.780000 s
+
+polecenie:  -g test.txt 2000 8192 
+wywołanie funkcji generate 
+Cpu user time 0.260000 s
+Cpu system time 0.050000 s
+
+polecenie:  -s test.txt 2000 8192 sys 
+wywołanie funkcji sort: 
+Cpu user time 0.770000 s
+Cpu system time 3.680000 s
+
+polecenie:  -s test1.txt 2000 8192 lib 
+wywołanie funkcji sort: 
+Cpu user time 1.010000 s
+Cpu system time 4.680000 s
+
+
+//****SORT TEST 2****//
+polecenie:  -g test.txt 5000 1 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.030000 s
+
+polecenie:  -s test.txt 5000 1 sys 
+wywołanie funkcji sort: 
+Cpu user time 4.650000 s
+Cpu system time 14.670000 s
+
+polecenie:  -s test1.txt 5000 1 lib 
+wywołanie funkcji sort: 
+Cpu user time 3.820000 s
+Cpu system time 5.820000 s
+
+polecenie:  -g test.txt 5000 4 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.020000 s
+
+polecenie:  -s test.txt 5000 4 sys 
+wywołanie funkcji sort: 
+Cpu user time 4.750000 s
+Cpu system time 14.900000 s
+
+polecenie:  -s test1.txt 5000 4 lib 
+wywołanie funkcji sort: 
+Cpu user time 3.250000 s
+Cpu system time 5.700000 s
+
+polecenie:  -g test.txt 5000 512 
+wywołanie funkcji generate 
+Cpu user time 0.060000 s
+Cpu system time 0.020000 s
+
+polecenie:  -s test.txt 5000 512 sys 
+wywołanie funkcji sort: 
+Cpu user time 4.790000 s
+Cpu system time 17.450000 s
+
+polecenie:  -s test1.txt 5000 512 lib 
+wywołanie funkcji sort: 
+Cpu user time 3.630000 s
+Cpu system time 8.370000 s
+
+polecenie:  -g test.txt 5000 1024 
+wywołanie funkcji generate 
+Cpu user time 0.070000 s
+Cpu system time 0.050000 s
+
+polecenie:  -s test.txt 5000 1024 sys 
+wywołanie funkcji sort: 
+Cpu user time 4.680000 s
+Cpu system time 16.810000 s
+
+polecenie:  -s test1.txt 5000 1024 lib 
+wywołanie funkcji sort: 
+Cpu user time 4.040000 s
+Cpu system time 11.090000 s
+
+polecenie:  -g test.txt 5000 4096 
+wywołanie funkcji generate 
+Cpu user time 0.330000 s
+Cpu system time 0.210000 s
+
+polecenie:  -s test.txt 5000 4096 sys 
+wywołanie funkcji sort: 
+Cpu user time 4.940000 s
+Cpu system time 17.890000 s
+
+polecenie:  -s test1.txt 5000 4096 lib 
+wywołanie funkcji sort: 
+Cpu user time 6.260000 s
+Cpu system time 22.840000 s
+
+polecenie:  -g test.txt 5000 8192 
+wywołanie funkcji generate 
+Cpu user time 0.630000 s
+Cpu system time 0.190000 s
+
+polecenie:  -s test.txt 5000 8192 sys 
+wywołanie funkcji sort: 
+Cpu user time 4.910000 s
+Cpu system time 21.800000 s
+
+polecenie:  -s test1.txt 5000 8192 lib 
+wywołanie funkcji sort: 
+Cpu user time 6.550000 s
+Cpu system time 28.950000 s
+
+
+//****COPY TEST 1****//
+polecenie:  -g test.txt 10000 1 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.010000 s
+
+polecenie:  -c test.txt test2.txt 10000 1 sys 
+wywołanie funkcji copy: 
 Cpu user time 0.000000 s
 Cpu system time 0.000000 s
 
-polecenie:  -g /home/krisolew/anqe.txt 10 20  -g /home/krisolew/anqe.txt 10 20 
-wywołanie funkcji generate 
+polecenie:  -c test1.txt test2.txt 10000 1 lib 
+wywołanie funkcji copy: 
 Cpu user time 0.000000 s
 Cpu system time 0.000000 s
 
+polecenie:  -g test.txt 10000 4 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.010000 s
+
+polecenie:  -c test.txt test2.txt 10000 4 sys 
+wywołanie funkcji copy: 
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -c test1.txt test2.txt 10000 4 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.000000 s
+Cpu system time 0.010000 s
+
+polecenie:  -g test.txt 10000 512 
+wywołanie funkcji generate 
+Cpu user time 0.040000 s
+Cpu system time 0.020000 s
+
+polecenie:  -c test.txt test2.txt 10000 512 sys 
+wywołanie funkcji copy: 
+Cpu user time 0.080000 s
+Cpu system time 0.870000 s
+
+polecenie:  -c test1.txt test2.txt 10000 512 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.010000 s
+Cpu system time 0.010000 s
+
+polecenie:  -g test.txt 10000 1024 
+wywołanie funkcji generate 
+Cpu user time 0.090000 s
+Cpu system time 0.020000 s
+
+polecenie:  -c test.txt test2.txt 10000 1024 sys 
+wywołanie funkcji copy: 
+Cpu user time 0.180000 s
+Cpu system time 1.940000 s
+
+polecenie:  -c test1.txt test2.txt 10000 1024 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.020000 s
+Cpu system time 0.020000 s
+
+polecenie:  -g test.txt 10000 4096 
+wywołanie funkcji generate 
+Cpu user time 0.450000 s
+Cpu system time 0.040000 s
+
+polecenie:  -c test.txt test2.txt 10000 4096 sys 
+wywołanie funkcji copy: 
+Cpu user time 0.750000 s
+Cpu system time 6.930000 s
+
+polecenie:  -c test1.txt test2.txt 10000 4096 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.110000 s
+Cpu system time 0.050000 s
+
+polecenie:  -g test.txt 10000 8192 
+wywołanie funkcji generate 
+Cpu user time 0.780000 s
+Cpu system time 0.180000 s
+
+polecenie:  -c test.txt test2.txt 10000 8192 sys 
+wywołanie funkcji copy: 
+Cpu user time 1.450000 s
+Cpu system time 13.580000 s
+
+polecenie:  -c test1.txt test2.txt 10000 8192 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.200000 s
+Cpu system time 0.120000 s
+
+
+//****COPY TEST 2****//
+polecenie:  -g test.txt 50000 1 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.090000 s
+
+polecenie:  -c test.txt test2.txt 50000 1 sys 
+wywołanie funkcji copy: 
+Cpu user time 0.000000 s
+Cpu system time 0.010000 s
+
+polecenie:  -c test1.txt test2.txt 50000 1 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -g test.txt 50000 4 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.080000 s
+
+polecenie:  -c test.txt test2.txt 50000 4 sys 
+wywołanie funkcji copy: 
+Cpu user time 0.000000 s
+Cpu system time 0.040000 s
+
+polecenie:  -c test1.txt test2.txt 50000 4 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -g test.txt 50000 512 
+wywołanie funkcji generate 
+Cpu user time 0.250000 s
+Cpu system time 0.120000 s
+
+polecenie:  -c test.txt test2.txt 50000 512 sys 
+wywołanie funkcji copy: 
+Cpu user time 0.400000 s
+Cpu system time 4.240000 s
+
+polecenie:  -c test1.txt test2.txt 50000 512 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.060000 s
+Cpu system time 0.040000 s
+
+polecenie:  -g test.txt 50000 1024 
+wywołanie funkcji generate 
+Cpu user time 0.460000 s
+Cpu system time 0.230000 s
+
+polecenie:  -c test.txt test2.txt 50000 1024 sys 
+wywołanie funkcji copy: 
+Cpu user time 0.840000 s
+Cpu system time 8.470000 s
+
+polecenie:  -c test1.txt test2.txt 50000 1024 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.140000 s
+Cpu system time 0.070000 s
+
+polecenie:  -g test.txt 50000 4096 
+wywołanie funkcji generate 
+Cpu user time 1.880000 s
+Cpu system time 0.560000 s
+
+polecenie:  -c test.txt test2.txt 50000 4096 sys 
+wywołanie funkcji copy: 
+Cpu user time 3.600000 s
+Cpu system time 35.130000 s
+
+polecenie:  -c test1.txt test2.txt 50000 4096 lib 
+wywołanie funkcji copy: 
+Cpu user time 0.470000 s
+Cpu system time 0.390000 s
+
+polecenie:  -g test.txt 50000 8192 
+wywołanie funkcji generate 
+Cpu user time 3.920000 s
+Cpu system time 0.750000 s
+
+polecenie:  -c test.txt test2.txt 50000 8192 sys 
+wywołanie funkcji copy: 
+Cpu user time 8.040000 s
+Cpu system time 76.530000 s
+
+polecenie:  -c test1.txt test2.txt 50000 8192 lib 
+wywołanie funkcji copy: 
+Cpu user time 1.150000 s
+Cpu system time 0.760000 s
