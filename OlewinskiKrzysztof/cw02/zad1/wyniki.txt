@@ -1,0 +1,15 @@
+polecenie:  -g /home/krisolew/anqe.txt 10 20  -g /home/krisolew/anqe.txt 10 20 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -g /home/krisolew/anqe.txt 10 20  -g /home/krisolew/anqe.txt 10 20 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
+polecenie:  -g /home/krisolew/anqe.txt 10 20  -g /home/krisolew/anqe.txt 10 20 
+wywołanie funkcji generate 
+Cpu user time 0.000000 s
+Cpu system time 0.000000 s
+
