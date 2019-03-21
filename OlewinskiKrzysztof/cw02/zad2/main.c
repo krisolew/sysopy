@@ -18,12 +18,13 @@ bool compare_times(time_t file_date)
 {
     switch(operator[0]){
         case '>': 
-            return file_date > t;
+            return (file_date > t);
         case '=': 
-            return file_date = t;
+            return (file_date = t);
         case '<': 
-            return file_date < t;
+            return (file_date < t);
     }
+    return true;
 }
 
 int file_info( const char * file, const struct stat *status, int flag, struct FTW * s)
@@ -43,7 +44,7 @@ int file_info( const char * file, const struct stat *status, int flag, struct FT
         else if (S_ISSOCK(status->st_mode)) printf("sock\n");
 
         //rozmiar
-        printf("rozmiar: %d bajtow\n", status->st_size);
+        printf("rozmiar: %ld bajtow\n", status->st_size);
 
         struct tm *tm;
         char buf[20];
