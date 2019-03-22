@@ -30,12 +30,13 @@ bool compare_times(time_t file_date)
 {
     switch(operator[0]){
         case '>': 
-            return file_date > t;
+            return (file_date > t);
         case '=': 
-            return file_date = t;
+            return (file_date = t);
         case '<': 
-            return file_date < t;
+            return (file_date < t);
     }
+    return true;
 }
 
 void read_file(char * full_path, struct stat status)
@@ -78,9 +79,7 @@ void read_file(char * full_path, struct stat status)
 void search(char *path)
 {
     DIR * stream = opendir(path);
-    
-    long int num_of_start_dir = telldir(stream);
-    long int num_of_dir = num_of_start_dir;
+
     struct dirent *file;
 
     while((file = readdir(stream)) != NULL){
