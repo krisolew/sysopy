@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
     char seconds[128];
     char timestring[128];
     char pid[15];
-    int s;
 
     while(1>0)
     {
@@ -57,7 +56,7 @@ int main(int argc, char *argv[])
         time_t mytime = time((time_t*)0);
         t = localtime(&mytime);
         strftime(timestring, 128, "%c", t);
-        sprintf(seconds, "%d", s);
+        sprintf(seconds, "%d", freq);
         sprintf(pid, "%d", getpid());
         strcpy(dest, pid);
         strcat(dest, " ");

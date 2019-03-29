@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
                         fclose(file);
                         return -1;
                     }
-                disc(file, status, file_name, seconds, time_to_stop);
+                disc(file, status, real_path, seconds, time_to_stop);
             }
         }
         else {

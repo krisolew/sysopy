@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
         else if(strcmp(argv[3], "disc") == 0) {
             pid[count] = fork();
             if(pid[count] == 0 ) {
-                disc(file, status, file_name, seconds, time_to_stop);
+                disc(file, status, real_path, seconds, time_to_stop);
             }
         }
         else {
