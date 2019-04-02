@@ -143,7 +143,7 @@ void print_list()
     }
 }
 
-void print_raport(){
+void print_raport(){ 
 
     int i; 
     for(i=0; i<count; i++) kill(pid[i], SIGQUIT);
