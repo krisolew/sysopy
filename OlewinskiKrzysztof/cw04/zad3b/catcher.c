@@ -13,11 +13,32 @@
 int received_signals = 0;
 int sender_pid = -1;
 
-void count_function(int sig,siginfo_t *info, void *void_ptr){
+void count_function_kill(int sig,siginfo_t *info, void *void_ptr){
     received_signals++;
     sender_pid = info->si_pid;
+
+    printf("otrzymalem USR1 %d\n", received_signals);
+    kill(sender_pid, SIGUSR1);
 }
 
+void count_function_queue(int sig,siginfo_t *info, void *void_ptr){
+    received_signals++;
+    sender_pid = info->si_pid;
+
+    union sigval value;
+    value.sival_int = 1;
+    sigqueue(sender_pid, SIGUSR1, value);
+}
+
+void count_function_sigrt(int sig,siginfo_t *info, void *void_ptr){
+    received_signals++;
+    sender_pid = info->si_pid;
+
+    kill(sender_pid, SIGRTMIN+1);
+}
+
+
+//KILL
 void signal_USR2(int sig_num)
 {
     if (sender_pid == -1) exit(0);
@@ -32,6 +53,8 @@ void signal_USR2(int sig_num)
     exit(0);
 }
 
+
+//SIGQUEUE
 void send_with_queue(int sig_num)
 {
     union sigval value;
@@ -50,6 +73,8 @@ void send_with_queue(int sig_num)
     exit(0);
 }
 
+
+//SIGRT
 void signal_2(int sig_num)
 {
     if (sender_pid == -1) exit(0);
@@ -89,13 +114,13 @@ int main(int argc, char* argv[])
 
     struct sigaction act;
     sigemptyset(&act.sa_mask);
+    act.sa_flags = SA_SIGINFO;
     
    
     if ( strcmp(mode,"KILL") == 0)
     {
-        act.sa_flags = SA_SIGINFO;
+        act.sa_sigaction = &count_function_kill;
         sigaddset(&act.sa_mask, SIGUSR2);
-        act.sa_sigaction = &count_function;
         sigaction(SIGUSR1, &act, NULL);
         act.sa_flags = 0;
         act.sa_handler = signal_USR2;
@@ -103,9 +128,7 @@ int main(int argc, char* argv[])
     }
     else if ( strcmp(mode,"SIGQUEUE") == 0)
     {
-        act.sa_flags = SA_SIGINFO;
-        act.sa_sigaction = &count_function;
-        sigemptyset(&act.sa_mask);
+        act.sa_sigaction = &count_function_queue;
         sigaddset(&act.sa_mask, SIGUSR2);
         sigaction(SIGUSR1, &act, NULL);
         act.sa_flags = 0;
@@ -115,9 +138,8 @@ int main(int argc, char* argv[])
     }
     else if ( strcmp(mode,"SIGRT") == 0)
     {
-        act.sa_flags = SA_SIGINFO;
+        act.sa_sigaction = &count_function_sigrt;
         sigaddset(&act.sa_mask, SIGRTMIN+2);
-        act.sa_sigaction = &count_function;
         sigaction(SIGRTMIN+1, &act, NULL);
         act.sa_flags = 0;
         act.sa_handler = signal_2;

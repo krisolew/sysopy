@@ -12,16 +12,24 @@
 
 int received_signals = 0;
 int sent_signals;
+int num_of_signals;
+int catcher_pid;
 
-void count_function(int sig,siginfo_t *info, void *void_ptr)
-{
-    received_signals++;
-    printf("Odebrano sygnal nr %d od catchera \n",info->si_value.sival_int);
-}
+void send_with_kill();
+void send_with_queue();
+void send_with_sigrt();
 
+//KILL
 void signal_USR1(int sig_num)
 {
-    received_signals++;
+    if (num_of_signals >= 0)
+    {
+        send_with_kill();    
+    }
+    else
+    {
+        received_signals++;
+    }
 }
 
 void signal_USR2(int sig_num)
@@ -31,10 +39,62 @@ void signal_USR2(int sig_num)
     exit(0);
 }
 
+void send_with_kill()
+{
+    if (num_of_signals > 0)
+    {
+        kill(catcher_pid,SIGUSR1);
+        num_of_signals--;        
+    }
+    else {
+        num_of_signals--;                   //dekrementacja do liczby ujemnej by zatrzymac potwierdzanie sygnalu
+        kill(catcher_pid,SIGUSR2);
+    }
+}
+
+
+//SIGQUEUE
+void count_function(int sig,siginfo_t *info, void *void_ptr)
+{
+    if (num_of_signals >=0)
+    {
+        send_with_queue();
+    }
+    else
+    {
+        printf("Odebrano sygnal nr %d od catchera \n",info->si_value.sival_int);
+        received_signals++; 
+    }
+}
+
+void send_with_queue()
+{
+    union sigval value;
+
+    if (num_of_signals > 0)
+    {
+        sigqueue(catcher_pid, SIGUSR1, value);
+        printf("sygnal wyslany\n");
+        num_of_signals--;
+    }
+    else {
+        num_of_signals--;                   //dekrementacja do liczby ujemnej by zatrzymac potwierdzanie sygnalu
+        sigqueue(catcher_pid, SIGUSR2, value);
+    }
+}
+
+
+//SIGRT
 void signal_1(int sig_num)
 {
-    received_signals++;
-    return;
+    if (num_of_signals >= 0)
+    {
+        send_with_sigrt();    
+    }
+    else
+    {
+        received_signals++;
+    }
 }
 
 void signal_2(int sig_num)
@@ -44,37 +104,20 @@ void signal_2(int sig_num)
     exit(0);
 }
 
-
-void send_with_kill(int num_of_signals, int catcher_pid)
+void send_with_sigrt()
 {
-    while (num_of_signals > 0)
-    {
-        kill(catcher_pid,SIGUSR1 );
-        num_of_signals--;
-    }
-    kill(catcher_pid,SIGUSR2 );
-}
-
-void send_with_queue(int num_of_signals, int catcher_pid, union sigval value)
-{
-    
-    while (num_of_signals > 0)
-    {
-        sigqueue(catcher_pid, SIGUSR1, value);
-        num_of_signals--;
-    }
-    sigqueue(catcher_pid, SIGUSR2, value);
-}
-
-void send_with_sigrt(int num_of_signals, int catcher_pid)
-{
-    while (num_of_signals > 0)
+    if (num_of_signals > 0)
     {
         kill(catcher_pid, SIGRTMIN+1);
         num_of_signals--;
     }
-    kill(catcher_pid, SIGRTMIN+2);
+    else {
+        num_of_signals--;                   //dekrementacja do liczby ujemnej by zatrzymac potwierdzanie sygnalu
+        kill(catcher_pid, SIGRTMIN+2);
+    }
 }
+
+
 
 int main(int argc, char* argv[])
 {
@@ -84,14 +127,14 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    int catcher_pid;
+    catcher_pid;
     if(sscanf(argv[1],"%d", &catcher_pid) != 1)
     {
         printf("First parametr should be integer\n");
         return -1;
     }
 
-    int num_of_signals;
+    num_of_signals;
     if(sscanf(argv[2],"%d", &num_of_signals) != 1)
     {
         printf("Second parametr should be integer\n");
@@ -103,7 +146,6 @@ int main(int argc, char* argv[])
     mode = argv[3];
 
     struct sigaction act;
-    union sigval value;
 
     if ( strcmp(mode,"KILL") == 0)
     {
@@ -115,7 +157,7 @@ int main(int argc, char* argv[])
         act.sa_handler = signal_USR2;
         sigaction(SIGUSR2, &act, NULL);
 
-        send_with_kill(num_of_signals, catcher_pid);
+        send_with_kill();
     }
     else if ( strcmp(mode,"SIGQUEUE") == 0)
     {
@@ -128,7 +170,7 @@ int main(int argc, char* argv[])
         act.sa_handler = signal_USR2;
         sigaction(SIGUSR2, &act, NULL);
 
-        send_with_queue(num_of_signals, catcher_pid, value);
+        send_with_queue();
     }
     else if ( strcmp(mode,"SIGRT") == 0)
     {
@@ -140,7 +182,7 @@ int main(int argc, char* argv[])
         act.sa_handler = signal_2;
         sigaction(SIGRTMIN+2, &act, NULL);
 
-        send_with_sigrt(num_of_signals, catcher_pid);
+        send_with_sigrt();
     }
     else
     {
