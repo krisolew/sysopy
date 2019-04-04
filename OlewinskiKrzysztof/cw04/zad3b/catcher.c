@@ -17,7 +17,6 @@ void count_function_kill(int sig,siginfo_t *info, void *void_ptr){
     received_signals++;
     sender_pid = info->si_pid;
 
-    printf("otrzymalem USR1 %d\n", received_signals);
     kill(sender_pid, SIGUSR1);
 }
 

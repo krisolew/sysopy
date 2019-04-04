@@ -74,7 +74,6 @@ void send_with_queue()
     if (num_of_signals > 0)
     {
         sigqueue(catcher_pid, SIGUSR1, value);
-        printf("sygnal wyslany\n");
         num_of_signals--;
     }
     else {
