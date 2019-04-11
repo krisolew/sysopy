@@ -1,0 +1,3 @@
+ls -al | wc -l
+ps -aux | head
+ps -aux | head | wc -l
