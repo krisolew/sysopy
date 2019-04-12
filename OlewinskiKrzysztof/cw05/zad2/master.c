@@ -4,7 +4,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-
 int main(int argc, char **argv)
 {
     if(argc != 2)
@@ -13,7 +12,7 @@ int main(int argc, char **argv)
         return -1;
     }
     
-    if( mkfifo(argv[1],S_IRUSR| S_IWUSR|S_IFIFO)<  0)
+    if( mkfifo(argv[1], S_IRUSR | S_IWUSR) < 0)
     {
         printf("Error when creating fifo\n");
         return -1;
