@@ -5,6 +5,7 @@
 #define MEX_MESSAGE_LENGTH 500
 #define MAX_COMMAND_LENGTH 500
 #define NUMBER_OF_COMMANDS 10
+#define SERVER_KEY 's'
 
 enum Command_t
 {
@@ -26,3 +27,15 @@ struct Message_t
     pid_t senderId;
     char msgContent[MEX_MESSAGE_LENGTH];
 };
+
+key_t getServerQueueKey() {
+    char *homeDir = getenv("HOME");
+    if (homeDir == NULL) perror("No HOME environment variable");
+    return ftok(homeDir, SERVER_KEY);
+}
+
+key_t getClientQueueKey() {
+    char *homeDir = getenv("HOME");
+    if (homeDir == NULL) perror("No HOME environment variable");
+    return ftok(homeDir, getpid());
+}
