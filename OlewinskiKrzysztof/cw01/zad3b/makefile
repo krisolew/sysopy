@@ -16,11 +16,9 @@ clear:
 
 shared: clear
 	export LD_LIBRARY_PATH=.:$SD_LIBRARY_PATH
-	gcc -Wall -fPIC -O$(type) -c library.c
-	gcc -Wall -shared -Wl,-soname,liblibrary.so.1 -o liblibrary.so.1.0.1 library.o -lc
-	ln -s liblibrary.so.1.0.1 liblibrary.so.1
-	ln -s liblibrary.so.1 liblibrary.so
-	gcc main.c -O$(type) -llibrary -o main -L. 
+	gcc -Wall -fPIC -O$(type) -c library.c 
+	gcc -shared -o library.so library.o
+	gcc main.c -O$(type) library.o -o main -L. 
 	make test
 
 dll: clear 
