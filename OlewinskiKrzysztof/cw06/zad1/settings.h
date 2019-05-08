@@ -28,6 +28,8 @@ struct Message_t
     char msgContent[MEX_MESSAGE_LENGTH];
 };
 
+#define MSGSZ sizeof(struct Message_t)-sizeof(long) //msgsz doesn't contain mType
+
 key_t getServerQueueKey() {
     char *homeDir = getenv("HOME");
     if (homeDir == NULL) perror("No HOME environment variable");
