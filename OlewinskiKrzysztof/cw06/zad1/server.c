@@ -17,6 +17,41 @@ struct Client_t
 struct Client_t clients[MAX_NUMBER_OF_CLIENTS];
 int queueID = -1;
 
+void handle_message(struct MESSAGE *message) {
+    switch (message->mType) {
+        case STOP:
+            exec_stop(message->senderId);
+            break;
+        case ECHO:
+            exec_echo(message->senderId, message->message);
+            break;
+        case INIT:
+            exec_init(message->senderId, message->message);
+            break;
+        case LIST:
+            exec_list(message->senderId);
+            break;
+        case FRIENDS:
+            exec_friends(message->senderId, message->message);
+            break;
+        case _2ALL:
+            exec_2_all(message->senderId, message->message);
+            break;
+        case _2FRIENDS:
+            exec_2_friends(message->senderId, message->message);
+            break;
+        case _2ONE:
+            exec_2_one(message->senderId, message->message);
+            break;
+        case ADD:
+            exec_add(message->senderId, message->message);
+            break;
+        case DEL:
+            exec_del(message->senderId, message->message);
+            break;
+    }
+}
+
 int main()
 {
     int i;
@@ -33,7 +68,19 @@ int main()
         return -1;
     }
 
+    struct Message_t message;
+    while(1)
+    {
+        if (msgrcv(queueID, &message, MSGSZ, -(NUMBER_OF_COMMANDS + 1), 0) == -1)
+        {
+            perror("Cannot receive message form queue");
+            return -1;
+        }
+        handle_message(&message);
+    }
+
     msgctl(queueID, IPC_RMID, NULL);
 
     return 0;
 }
+
