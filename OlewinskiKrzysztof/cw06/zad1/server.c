@@ -75,13 +75,13 @@ void handle_message(struct MESSAGE *message) {
             exec_friends(message->senderId, message->msgContent);
             break;
         case _2ALL:
-            exec_2_all(message->senderId, message->msgContent);
+            exec_2all(message->senderId, message->msgContent);
             break;
         case _2FRIENDS:
-            exec_2_friends(message->senderId, message->msgContent);
+            exec_2friends(message->senderId, message->msgContent);
             break;
         case _2ONE:
-            exec_2_one(message->senderId, message->msgContent);
+            exec_2one(message->senderId, message->msgContent);
             break;
         case ADD:
             exec_add(message->senderId, message->msgContent);
