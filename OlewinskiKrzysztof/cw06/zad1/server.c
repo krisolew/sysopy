@@ -26,6 +26,13 @@ void exec_stop(int senderId)
 
 void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    char response[MAX_MESSAGE_LENGTH];
+    char date[31];
+    FILE *f = popen("date", "r");
+    fread(date, sizeof(char), 31, f);
+    pclose(f);
+    sprintf(response, "%s\t%s", msgContent, date);
+    send(senderId, ECHO, response);
 }
 
 void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
