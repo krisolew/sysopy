@@ -21,6 +21,17 @@ void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_
 
 void exec_stop(int senderId)
 {
+    if ( senderId >=0 && senderId < MAX_NUMBER_OF_CLIENTS)
+    {
+        clients[senderId].queueID = -1;
+        clients[senderId].current_friends_number = 0;
+        for (int i = 0; i < MAX_NUMBER_OF_CLIENTS; i++)
+            clients[senderId].friends[i] = -1;
+    }
+    else
+    {
+        perror("Cannot delet client from server");
+    }
 }
 
 void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
