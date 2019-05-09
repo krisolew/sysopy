@@ -58,6 +58,16 @@ void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_list(int senderId)
 {
+    char buf[MAX_MESSAGE_LENGTH], response[MAX_MESSAGE_LENGTH];
+    int i = 0;
+    while (i < last_clientID)
+    {
+        sprintf(buf, "Id: %i\tQueueID: %i\n", i, clients[i].queueID);
+        strcat(response,buf);
+    }
+
+    send_response(senderId, LIST, response);
+
 }
 
 void exec_friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
