@@ -32,7 +32,7 @@ void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     fread(date, sizeof(char), 31, f);
     pclose(f);
     sprintf(response, "%s\t%s", msgContent, date);
-    send(senderId, ECHO, response);
+    send_response(senderId, ECHO, response);
 }
 
 void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
