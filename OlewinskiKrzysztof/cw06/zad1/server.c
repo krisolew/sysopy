@@ -27,6 +27,23 @@ void exec_echo(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    last_clientID++;
+    if (last_clientID > MAX_NUMBER_OF_CLIENTS)
+    {
+        perror("To mamy clients on server");
+        return;
+    }
+
+    int clientQueueId;
+    sscanf(msgContent, "%i", &clientQueueId);
+
+    clients[last_clientID].pid = senderId;
+    clients[last_clientID].current_friends_number = 0;
+    clients[last_clientID].queueID = clientQueueId;
+
+    char message[MAX_MESSAGE_LENGTH];
+    sprintf(message, "%i", last_clientID);
+    send_response(last_clientID, INIT, message);
 }
 
 void exec_list(pid_t senderId)
@@ -65,11 +82,6 @@ void send_response(int clientID, enum Command_t type, char msg[MAX_MESSAGE_LENGT
     message.senderId = -1;
 
     if (msgsnd(clients[clientID].queueID, &msg, MSGSZ, IPC_NOWAIT) == -1) perror("Cannot send response to client");
-}
-
-void function(int 1)
-{
-    
 }
 
 void handle_message(struct Message_t *message) {
