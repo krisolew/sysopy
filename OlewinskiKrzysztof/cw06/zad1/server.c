@@ -20,11 +20,11 @@ int queueID = -1;
 
 void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH]);
 
-void exec_stop(pid_t senderId)
+void exec_stop(int senderId)
 {
 }
 
-void exec_echo(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
+void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
@@ -49,31 +49,31 @@ void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
     send_response(last_clientID, INIT, response);
 }
 
-void exec_list(pid_t senderId)
+void exec_list(int senderId)
 {
 }
 
-void exec_friends(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
+void exec_friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
-void exec_2all(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
+void exec_2all(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
-void exec_2friends(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
+void exec_2friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
-void exec_2one(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
+void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
-void exec_add(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
+void exec_add(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
-void exec_del(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
+void exec_del(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
