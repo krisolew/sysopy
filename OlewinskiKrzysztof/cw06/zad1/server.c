@@ -57,8 +57,23 @@ void exec_del(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
-void handle_message(struct MESSAGE *message) {
-    switch (message->mType) {
+void send_response(int clientID, enum Command_t type, char msg[MAX_MESSAGE_LENGTH])
+{
+    struct Message_t message;
+    message.msgType = type;
+    strcpy(message.msgContent, msg);
+    message.senderId = -1;
+
+    if (msgsnd(clients[clientID].queueID, &msg, MSGSZ, IPC_NOWAIT) == -1) perror("Cannot send response to client");
+}
+
+void function(int 1)
+{
+    
+}
+
+void handle_message(struct Message_t *message) {
+    switch (message->msgType) {
         case STOP:
             exec_stop(message->senderId);
             break;
