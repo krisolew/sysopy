@@ -17,6 +17,46 @@ struct Client_t
 struct Client_t clients[MAX_NUMBER_OF_CLIENTS];
 int queueID = -1;
 
+void exex_stop(pid_t senderId)
+{
+}
+
+void exex_echo(pid_t senderId, char* msgContent)
+{
+}
+
+void exex_init(pid_t senderId, char* msgContent)
+{
+}
+
+void exex_list(pid_t senderId)
+{
+}
+
+void exex_friends(pid_t senderId, char* msgContent)
+{
+}
+
+void exex_2all(pid_t senderId, char* msgContent)
+{
+}
+
+void exex_2friends(pid_t senderId, char* msgContent)
+{
+}
+
+void exex_2one(pid_t senderId, char* msgContent)
+{
+}
+
+void exex_add(pid_t senderId, char* msgContent)
+{
+}
+
+void exex_del(pid_t senderId, char* msgContent)
+{
+}
+
 void handle_message(struct MESSAGE *message) {
     switch (message->mType) {
         case STOP:
@@ -83,4 +123,3 @@ int main()
 
     return 0;
 }
-
