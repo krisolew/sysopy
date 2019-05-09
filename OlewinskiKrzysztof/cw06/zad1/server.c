@@ -80,7 +80,7 @@ void exec_list(int senderId)
     {
         if ( clients[i].queueID != -1)
         {
-            sprintf(buf, "Id: %i\tQueueID: %i\n", i, clients[i].queueID);
+            sprintf(buf, "Id: %i QueueID: %i\n", i, clients[i].queueID);
             strcat(response,buf);
         }
     }
@@ -102,6 +102,17 @@ void exec_2friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    char text[MAX_MESSAGE_LENGTH-44], response[MAX_MESSAGE_LENGTH];        //TO DO do something with size of text
+    int reciverId;
+    char date[31];
+    FILE *f = popen("date", "r");
+    fread(date, sizeof(char), 31, f);
+    pclose(f);
+
+    sscanf(msgContent, "%i %s", &reciverId, text);
+    sprintf(response, "%s ID: %i Date: %s\n", text, senderId, date);
+
+    send_response(reciverId, _2ONE, response);
 }
 
 void exec_add(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
