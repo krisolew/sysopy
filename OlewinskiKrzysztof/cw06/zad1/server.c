@@ -41,6 +41,7 @@ void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
     {
         if (clients[i].queueID == -1) break;
     }
+    clientID = i;
 
     if (clientID == MAX_NUMBER_OF_CLIENTS)
     {
@@ -64,14 +65,16 @@ void exec_list(int senderId)
 {
     char buf[MAX_MESSAGE_LENGTH], response[MAX_MESSAGE_LENGTH];
     int i = 0;
-    while (i < last_clientID)
+    for ( ; i < MAX_NUMBER_OF_CLIENTS; i++)
     {
-        sprintf(buf, "Id: %i\tQueueID: %i\n", i, clients[i].queueID);
-        strcat(response,buf);
+        if ( clients[i].queueID != -1)
+        {
+            sprintf(buf, "Id: %i\tQueueID: %i\n", i, clients[i].queueID);
+            strcat(response,buf);
+        }
     }
 
     send_response(senderId, LIST, response);
-
 }
 
 void exec_friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
