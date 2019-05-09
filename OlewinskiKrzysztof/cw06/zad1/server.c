@@ -15,7 +15,6 @@ struct Client_t
 };
 
 struct Client_t clients[MAX_NUMBER_OF_CLIENTS];
-int last_clientID = -1;
 int queueID = -1;
 
 void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH]);
@@ -37,8 +36,13 @@ void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
-    last_clientID++;
-    if (last_clientID > MAX_NUMBER_OF_CLIENTS)
+    int clientID, i=0;
+    for( ; i<MAX_NUMBER_OF_CLIENTS; i++)
+    {
+        if (clients[i].queueID == -1) break;
+    }
+
+    if (clientID == MAX_NUMBER_OF_CLIENTS)
     {
         perror("To mamy clients on server");
         return;
@@ -47,13 +51,13 @@ void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
     int clientQueueId;
     sscanf(msgContent, "%i", &clientQueueId);
 
-    clients[last_clientID].pid = senderId;
-    clients[last_clientID].current_friends_number = 0;
-    clients[last_clientID].queueID = clientQueueId;
+    clients[clientID].pid = senderId;
+    clients[clientID].current_friends_number = 0;
+    clients[clientID].queueID = clientQueueId;
 
     char response[MAX_MESSAGE_LENGTH];
-    sprintf(response, "%i", last_clientID);
-    send_response(last_clientID, INIT, response);
+    sprintf(response, "%i", clientID);
+    send_response(clientID, INIT, response);
 }
 
 void exec_list(int senderId)
