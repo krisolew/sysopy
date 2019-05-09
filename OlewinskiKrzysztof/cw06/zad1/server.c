@@ -15,7 +15,10 @@ struct Client_t
 };
 
 struct Client_t clients[MAX_NUMBER_OF_CLIENTS];
+int last_clientID = -1;
 int queueID = -1;
+
+void send_response(int clientID, enum Command_t type, char msg[MAX_MESSAGE_LENGTH]);
 
 void exec_stop(pid_t senderId)
 {
