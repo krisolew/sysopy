@@ -23,31 +23,31 @@ void handle_message(struct MESSAGE *message) {
             exec_stop(message->senderId);
             break;
         case ECHO:
-            exec_echo(message->senderId, message->message);
+            exec_echo(message->senderId, message->msgContent);
             break;
         case INIT:
-            exec_init(message->senderId, message->message);
+            exec_init(message->senderId, message->msgContent);
             break;
         case LIST:
             exec_list(message->senderId);
             break;
         case FRIENDS:
-            exec_friends(message->senderId, message->message);
+            exec_friends(message->senderId, message->msgContent);
             break;
         case _2ALL:
-            exec_2_all(message->senderId, message->message);
+            exec_2_all(message->senderId, message->msgContent);
             break;
         case _2FRIENDS:
-            exec_2_friends(message->senderId, message->message);
+            exec_2_friends(message->senderId, message->msgContent);
             break;
         case _2ONE:
-            exec_2_one(message->senderId, message->message);
+            exec_2_one(message->senderId, message->msgContent);
             break;
         case ADD:
-            exec_add(message->senderId, message->message);
+            exec_add(message->senderId, message->msgContent);
             break;
         case DEL:
-            exec_del(message->senderId, message->message);
+            exec_del(message->senderId, message->msgContent);
             break;
     }
 }
