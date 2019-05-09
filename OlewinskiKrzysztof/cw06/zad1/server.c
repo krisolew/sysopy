@@ -18,7 +18,7 @@ struct Client_t clients[MAX_NUMBER_OF_CLIENTS];
 int last_clientID = -1;
 int queueID = -1;
 
-void send_response(int clientID, enum Command_t type, char msg[MAX_MESSAGE_LENGTH]);
+void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH]);
 
 void exec_stop(pid_t senderId)
 {
@@ -44,9 +44,9 @@ void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
     clients[last_clientID].current_friends_number = 0;
     clients[last_clientID].queueID = clientQueueId;
 
-    char message[MAX_MESSAGE_LENGTH];
-    sprintf(message, "%i", last_clientID);
-    send_response(last_clientID, INIT, message);
+    char response[MAX_MESSAGE_LENGTH];
+    sprintf(response, "%i", last_clientID);
+    send_response(last_clientID, INIT, response);
 }
 
 void exec_list(pid_t senderId)
@@ -77,14 +77,14 @@ void exec_del(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
 }
 
-void send_response(int clientID, enum Command_t type, char msg[MAX_MESSAGE_LENGTH])
+void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH])
 {
     struct Message_t message;
     message.msgType = type;
-    strcpy(message.msgContent, msg);
+    strcpy(message.msgContent, response);
     message.senderId = -1;
 
-    if (msgsnd(clients[clientID].queueID, &msg, MSGSZ, IPC_NOWAIT) == -1) perror("Cannot send response to client");
+    if (msgsnd(clients[clientID].queueID, &message, MSGSZ, IPC_NOWAIT) == -1) perror("Cannot send response to client");
 }
 
 void handle_message(struct Message_t *message) {
