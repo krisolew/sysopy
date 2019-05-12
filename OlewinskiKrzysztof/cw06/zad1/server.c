@@ -91,7 +91,7 @@ void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     FILE *f = popen("date", "r");
     fread(date, sizeof(char), 31, f);
     pclose(f);
-    sprintf(response, "%s\t%s", msgContent, date);
+    sprintf(response, "%s Date: %s", msgContent, date);
     send_response(senderId, ECHO, response);
 }
 
