@@ -159,7 +159,7 @@ void exec_2all(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     fread(date, sizeof(char), 31, f);
     pclose(f);
 
-    sprintf(response, "%s ID: %s Date: %s", msgContent, senderId, date);
+    sprintf(response, "%s ID: %d Date: %s", msgContent, senderId, date);
 
     int i = 0;
     for (; i<MAX_NUMBER_OF_CLIENTS; i++)
@@ -176,10 +176,10 @@ void exec_2friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     fread(date, sizeof(char), 31, f);
     pclose(f);
 
-    sprintf(response, "%s ID: %s Date: %s", msgContent, senderId, date);
+    sprintf(response, "%s ID: %d Date: %s", msgContent, senderId, date);
 
     int i = 0;
-    for (; i < clients[clientID].current_friends_number; i++)
+    for (; i < clients[senderId].current_friends_number; i++)
     {
         send_response(i, _2FRIENDS, response);
     }
@@ -274,9 +274,9 @@ void finishWork()
         }
     }
 
-    if (msgctl(serverQueueID, IPC_RMID, NULL) == -1){
+    if (msgctl(queueID, IPC_RMID, NULL) == -1){
         perror("Cannot remove server queue");
-        return -1;
+        return;
     }
 
     stop = 1;
