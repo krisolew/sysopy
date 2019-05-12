@@ -152,6 +152,19 @@ void exec_friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_2all(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    char response[MAX_MESSAGE_LENGTH];
+    char date[31];
+    FILE *f = popen("date", "r");
+    fread(date, sizeof(char), 31, f);
+    pclose(f);
+
+    sprintf(response, "%s ID: %s Date: %s", msgContent, senderId, date);
+
+    int i = 0;
+    for (; i<MAX_NUMBER_OF_CLIENTS; i++)
+    {
+        if (clients[i].queueID != -1) send_response(i, _2ALL, response);
+    }
 }
 
 void exec_2friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
