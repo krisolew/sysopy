@@ -43,6 +43,32 @@ void add_friends(int clientID, char list_of_friends[MAX_MESSAGE_LENGTH])
     }
 }
 
+void del_friends(int clientID, char list_of_friends[MAX_MESSAGE_LENGTH])
+{
+    char *friend = strtok(list_of_friends, "|");
+
+    while (friend != NULL && clients[clientID].current_friends_number > 0)
+    {
+        int friendID = strtol(friend, NULL, 10);
+        int exists = 0, i = 0;
+
+        for (; i < clients[clientID].current_friends_number; i++)
+        {
+            if (friendID == clients[clientID].friends[i]) {
+                exists = 1;
+                break;
+            }
+        }
+
+        if (exists && i < clients[clientID].current_friends_number)
+        {
+            clients[clientID].friends[friendID] = clients[clientID].friends[--clients[clientID].current_friends_number];
+        }
+
+        friend = strtok(NULL, "|");
+    }
+}
+
 void exec_stop(int senderId)
 {
     if ( senderId >=0 && senderId < MAX_NUMBER_OF_CLIENTS)
@@ -159,6 +185,12 @@ void exec_add(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_del(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    char list_of_friends[MAX_MESSAGE_LENGTH];
+
+    if (sscanf(msgContent, "%s", list_of_friends) == 1)
+    {
+        
+    }
 }
 
 void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH])
