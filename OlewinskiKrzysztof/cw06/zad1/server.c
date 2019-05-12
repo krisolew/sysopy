@@ -114,6 +114,14 @@ void exec_list(int senderId)
 
 void exec_friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    char list_of_friends[MAX_MESSAGE_LENGTH];
+
+    clients[senderId].current_friends_number = 0;
+
+    if (sscanf(msgContent, "%s", list_of_friends) == 1)
+    {
+        add_friends(senderId, list_of_friends);
+    }
 }
 
 void exec_2all(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
