@@ -264,8 +264,26 @@ void handle_message(struct Message_t *message) {
     }
 }
 
+void finishWork()
+{
+    int i = 0;
+    for (; i < MAX_NUMBER_OF_CLIENTS; i++) {
+        if (clients[i].queueID != -1) {
+            kill(clients[i].pid, SIGINT);
+        }
+    }
+
+    if (msgctl(serverQueueID, IPC_RMID, NULL) == -1){
+        perror("Cannot remove server queue");
+        return -1;
+    }
+
+    stop = 1;
+}
+
 int main()
 {
+    signal(SIGINT, finishWork);
     int i;
     for (i=0; i < MAX_NUMBER_OF_CLIENTS; i++)
     {
