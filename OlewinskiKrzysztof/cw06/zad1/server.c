@@ -189,7 +189,7 @@ void exec_del(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
     if (sscanf(msgContent, "%s", list_of_friends) == 1)
     {
-        
+        del_friends(senderId, list_of_friends);
     }
 }
 
