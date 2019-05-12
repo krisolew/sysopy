@@ -149,6 +149,12 @@ void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_add(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    char list_of_friends[MAX_MESSAGE_LENGTH];
+
+    if (sscanf(msgContent, "%s", list_of_friends) == 1)
+    {
+        add_friends(senderId, list_of_friends);
+    }
 }
 
 void exec_del(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
