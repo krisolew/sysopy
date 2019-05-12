@@ -16,6 +16,7 @@ struct Client_t
 
 struct Client_t clients[MAX_NUMBER_OF_CLIENTS];
 int queueID = -1;
+int stop = 0;
 
 void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH]);
 
@@ -299,7 +300,7 @@ int main()
     }
 
     struct Message_t message;
-    while(1)
+    while(!stop)
     {
         if (msgrcv(queueID, &message, MSGSZ, -(NUMBER_OF_COMMANDS + 1), 0) == -1)
         {
