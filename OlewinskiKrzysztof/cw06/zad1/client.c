@@ -262,7 +262,7 @@ int main()
 
     while(!stop)
     {
-        
+        execute_command(fdopen(STDIN_FILENO, "r"));
     }
 
     if (msgctl(clientQueueID, IPC_RMID, NULL) == -1)
