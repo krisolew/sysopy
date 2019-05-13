@@ -164,7 +164,10 @@ void exec_2all(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     int i = 0;
     for (; i<MAX_NUMBER_OF_CLIENTS; i++)
     {
-        if (clients[i].queueID != -1) send_response(i, _2ALL, response);
+        if (clients[i].queueID != -1) {
+            send_response(i, _2ALL, response);
+            kill(clients[i].pid, SIGRTMIN);
+        }
     }
 }
 
@@ -182,6 +185,7 @@ void exec_2friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     for (; i < clients[senderId].current_friends_number; i++)
     {
         send_response(i, _2FRIENDS, response);
+        kill(clients[i].pid, SIGRTMIN);
     }
 }
 
@@ -198,6 +202,7 @@ void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     sprintf(response, "%s ID: %i Date: %s\n", text, senderId, date);
 
     send_response(reciverId, _2ONE, response);
+    kill(clients[reciverId].pid, SIGRTMIN);
 }
 
 void exec_add(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
