@@ -66,7 +66,8 @@ void exec_init()
 
 void exec_stop()
 {
-    
+    stop = 1;
+    send_request(STOP, "");
 }
 
 void exec_echo(char args[MAX_MESSAGE_LENGTH])
