@@ -127,6 +127,11 @@ int main()
         return -1;
     }   
 
+    while(!stop)
+    {
+        
+    }
+
     if (msgctl(clientQueueID, IPC_RMID, NULL) == -1)
     {
         perror("Cannot remove client queue");
