@@ -94,7 +94,16 @@ void exec_echo(char args[MAX_MESSAGE_LENGTH])
 
 void exec_list()
 {
+    send_request(LIST, "");
+    struct Message_t message;
+    receive(&message);
+    if (message.type != LIST)
+    {
+        perror("Wrong type of response");
+        return;
+    }
     
+    printf("%s\n", msg.message);
 }
 
 void exec_friends(char args[MAX_MESSAGE_LENGTH])
