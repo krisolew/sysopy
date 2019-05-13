@@ -15,6 +15,20 @@ int clientQueueID = -1;
 int clientID = -1;
 int stop = 0;
 
+void send_request(enum Command_t type, char request[MAX_MESSAGE_LENGTH])
+{
+    struct Message_t message;
+    message.type = type;
+    strcpy(message.content, request);
+    message.senderId = clientID;
+
+    if (msgsnd(serverQueueID, &message, MSGSZ, IPC_NOWAIT) == -1)
+    {
+        perror("Cannot send request to server");
+        return;
+    }
+}
+
 void exec_init(char args[MAX_MESSAGE_LENGTH])
 {
 
