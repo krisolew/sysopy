@@ -223,44 +223,44 @@ void exec_del(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH])
 {
     struct Message_t message;
-    message.msgType = type;
-    strcpy(message.msgContent, response);
+    message.type = type;
+    strcpy(message.content, response);
     message.senderId = -1;
 
     if (msgsnd(clients[clientID].queueID, &message, MSGSZ, IPC_NOWAIT) == -1) perror("Cannot send response to client");
 }
 
 void handle_message(struct Message_t *message) {
-    switch (message->msgType) {
+    switch (message->type) {
         case STOP:
             exec_stop(message->senderId);
             break;
         case ECHO:
-            exec_echo(message->senderId, message->msgContent);
+            exec_echo(message->senderId, message->content);
             break;
         case INIT:
-            exec_init(message->senderId, message->msgContent);
+            exec_init(message->senderId, message->content);
             break;
         case LIST:
             exec_list(message->senderId);
             break;
         case FRIENDS:
-            exec_friends(message->senderId, message->msgContent);
+            exec_friends(message->senderId, message->content);
             break;
         case _2ALL:
-            exec_2all(message->senderId, message->msgContent);
+            exec_2all(message->senderId, message->content);
             break;
         case _2FRIENDS:
-            exec_2friends(message->senderId, message->msgContent);
+            exec_2friends(message->senderId, message->content);
             break;
         case _2ONE:
-            exec_2one(message->senderId, message->msgContent);
+            exec_2one(message->senderId, message->content);
             break;
         case ADD:
-            exec_add(message->senderId, message->msgContent);
+            exec_add(message->senderId, message->content);
             break;
         case DEL:
-            exec_del(message->senderId, message->msgContent);
+            exec_del(message->senderId, message->content);
             break;
     }
 }

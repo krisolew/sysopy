@@ -23,9 +23,9 @@ enum Command_t
 
 struct Message_t
 {
-    long msgType;
+    long type;
     pid_t senderId;
-    char msgContent[MAX_MESSAGE_LENGTH];
+    char content[MAX_MESSAGE_LENGTH];
 };
 
 #define MSGSZ sizeof(struct Message_t)-sizeof(long) //msgsz doesn't contain mType
