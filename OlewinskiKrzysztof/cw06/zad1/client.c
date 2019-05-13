@@ -157,7 +157,14 @@ void exec_2all(char args[MAX_MESSAGE_LENGTH])
 
 void exec_add(char args[MAX_MESSAGE_LENGTH])
 {
-    
+    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    int numberOfArguments = sscanf(args, "%s %s", command, text);
+    if (numberOfArguments == EOF || numberOfArguments < 2)
+    {
+        perror("2all expects one arguments");
+        return;
+    }
+    send_request(ADD, text);
 }
 
 void exec_del(char args[MAX_MESSAGE_LENGTH])
