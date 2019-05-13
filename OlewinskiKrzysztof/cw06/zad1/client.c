@@ -105,8 +105,16 @@ int execute_command(FILE *file)
     return 0;
 }
 
+void finishWork(int signalno)
+{
+    exec_stop();
+    stop = 1;
+}
+
 int main()
 {
+    signal(SIGINT, finishWork);
+
     if ((serverQueueID = msgget(getServerQueueKey(), 0)) == -1)
     {
         perror("Cannot create server queue");
