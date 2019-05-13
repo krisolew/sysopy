@@ -72,7 +72,24 @@ void exec_stop()
 
 void exec_echo(char args[MAX_MESSAGE_LENGTH])
 {
-    
+    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    int numberOfArguments = sscanf(args, "%s %s", command, text);
+    if (numberOfArguments == EOF || numberOfArguments < 2) {
+        printf("Echo expects one argument");
+        return;
+    }
+
+    send_request(ECHO, text);
+    struct Message_t message;
+    receive_response(&message);
+
+    if (message.type != ECHO)
+    {
+        perror("Wrong type of response");
+        return;
+    }
+
+    printf("%s\n", message.content);
 }
 
 void exec_list()
