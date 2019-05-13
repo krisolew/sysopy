@@ -15,6 +15,8 @@ int clientQueueID = -1;
 int clientID = -1;
 int stop = 0;
 
+int execute_command(FILE *file);
+
 void send_request(enum Command_t type, char request[MAX_MESSAGE_LENGTH])
 {
     struct Message_t message;
@@ -181,7 +183,22 @@ void exec_del(char args[MAX_MESSAGE_LENGTH])
 
 void exec_read(char args[MAX_MESSAGE_LENGTH])
 {
-    
+    char command[MAX_COMMAND_LENGTH], fileName[MAX_COMMAND_LENGTH];
+    int numberOfArguments = sscanf(args, "%s %s", command, fileName);
+    if (numberOfArguments == EOF || numberOfArguments < 2) {
+        printf("Read expects file name");
+        return;
+    }
+
+    FILE *f = fopen(fileName, "r");
+    if (f == NULL)
+    {
+        perror("Cannot open file");
+        return;
+    }
+
+    while (execute_command(f) != EOF){}
+    fclose(f);
 }
 
 int execute_command(FILE *file)
