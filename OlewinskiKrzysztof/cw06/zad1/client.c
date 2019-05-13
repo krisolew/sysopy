@@ -39,7 +39,29 @@ void receive_response(struct Message_t *message)
 
 void exec_init()
 {
+    struct Message_t message;
+    char request[MAX_MESSAGE_LENGTH];
 
+    sprintf(request, "%i", clientQueueID);
+
+    message.type = INIT;
+    strcpy(message.content, request);
+    message.senderId = getpid();
+
+    if (msgsnd(serverQueueID, &message, MSGSZ, IPC_NOWAIT) == -1)
+    {
+        perror("Cannot send request to server");
+        return;
+    }
+
+    receive_response(&message);
+
+    if (message.type != INIT)
+    {
+        perror("Wrong type of response");
+        return;
+    }
+    sscanf(message.content, "%i", &clientID);
 }
 
 void exec_stop()
@@ -147,7 +169,9 @@ int main()
     {
         perror("Cannot create client queue");
         return -1;
-    }   
+    }
+
+    exec_init();
 
     while(!stop)
     {
