@@ -236,6 +236,22 @@ int execute_command(FILE *file)
     return 0;
 }
 
+void signal_handler(int signalno)
+{
+    struct Message_t message;
+    receive(&message);
+    switch (message.type) {
+        case _2ALL:
+        case _2FRIENDS:
+        case _2ONE:
+            printf("%s", message.content);
+            break;
+        case STOP:
+            finishWork();
+            break;
+}
+}
+
 void finishWork(int signalno)
 {
     exec_stop();
@@ -245,6 +261,7 @@ void finishWork(int signalno)
 int main()
 {
     signal(SIGINT, finishWork);
+    signal(SIGRTMIN, signal_handler);
 
     if ((serverQueueID = msgget(getServerQueueKey(), 0)) == -1)
     {
