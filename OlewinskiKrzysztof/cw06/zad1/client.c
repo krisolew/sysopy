@@ -96,19 +96,26 @@ void exec_list()
 {
     send_request(LIST, "");
     struct Message_t message;
-    receive(&message);
+    receive_response(&message);
     if (message.type != LIST)
     {
         perror("Wrong type of response");
         return;
     }
-    
-    printf("%s\n", msg.message);
+
+    printf("%s\n", message.content);
 }
 
 void exec_friends(char args[MAX_MESSAGE_LENGTH])
 {
-    
+    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    int numberOfArguments = sscanf(args, "%s %s", command, text);
+    if (numberOfArguments == EOF || numberOfArguments == 0)
+    {
+        perror("Cannot read arguments");
+        return;
+    }
+    send_request(FRIENDS, text);
 }
 
 void exec_2one(char args[MAX_MESSAGE_LENGTH])
