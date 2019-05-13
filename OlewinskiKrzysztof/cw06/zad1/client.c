@@ -120,7 +120,15 @@ void exec_friends(char args[MAX_MESSAGE_LENGTH])
 
 void exec_2one(char args[MAX_MESSAGE_LENGTH])
 {
-    
+    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    int receiverId;
+    int numberOfArguments = sscanf(args, "%s %i %s", command, &receiverId, text);
+    if (numberOfArguments == EOF || numberOfArguments < 3)
+    {
+        perror("2one expects two arguments");
+        return;
+    }
+    send_request(_2ONE, text);
 }
 
 void exec_2friends(char args[MAX_MESSAGE_LENGTH])
