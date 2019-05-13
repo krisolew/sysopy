@@ -29,7 +29,15 @@ void send_request(enum Command_t type, char request[MAX_MESSAGE_LENGTH])
     }
 }
 
-void exec_init(char args[MAX_MESSAGE_LENGTH])
+void receive_response(struct Message_t *message)
+{
+    if (msgrcv(clientQueueID, message, MSGSZ, -(NUMBER_OF_COMMANDS + 1), 0) == -1)
+    {
+        perror("Cannot receive server response");
+    }
+}
+
+void exec_init()
 {
 
 }
