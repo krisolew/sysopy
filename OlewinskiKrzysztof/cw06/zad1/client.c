@@ -10,8 +10,9 @@
 
 #include "settings.h"
 
-int serverQueueID;
-int clientQueueID;
+int serverQueueID = -1;
+int clientQueueID = -1;
+int clientID = -1;
 int stop = 0;
 
 void exec_init(char args[MAX_MESSAGE_LENGTH])
@@ -115,6 +116,12 @@ int main()
     if ((clientQueueID = msgget(getClientQueueKey(), IPC_CREAT | IPC_EXCL | 0666)) == -1)
     {
         perror("Cannot create client queue");
+        return -1;
+    }   
+
+    if (msgctl(clientQueueID, IPC_RMID, NULL) == -1)
+    {
+        perror("Cannot remove client queue");
         return -1;
     }
     
