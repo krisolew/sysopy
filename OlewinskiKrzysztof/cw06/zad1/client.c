@@ -133,12 +133,26 @@ void exec_2one(char args[MAX_MESSAGE_LENGTH])
 
 void exec_2friends(char args[MAX_MESSAGE_LENGTH])
 {
-    
+    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    int numberOfArguments = sscanf(args, "%s %s", command, text);
+    if (numberOfArguments == EOF || numberOfArguments < 2)
+    {
+        perror("2friends expects one arguments");
+        return;
+    }
+    send_request(_2FRIENDS, text);
 }
 
 void exec_2all(char args[MAX_MESSAGE_LENGTH])
 {
-    
+    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    int numberOfArguments = sscanf(args, "%s %s", command, text);
+    if (numberOfArguments == EOF || numberOfArguments < 2)
+    {
+        perror("2all expects one arguments");
+        return;
+    }
+    send_request(_2ALL, text);
 }
 
 void exec_add(char args[MAX_MESSAGE_LENGTH])
