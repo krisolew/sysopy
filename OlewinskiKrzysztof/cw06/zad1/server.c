@@ -70,6 +70,20 @@ void del_friends(int clientID, char list_of_friends[MAX_MESSAGE_LENGTH])
         int friendID = strtol(friend, NULL, 10);
         int exists = 0, i = 0;
 
+        if (clients[friendID].queueID == -1 || friendID < 0 || friendID > MAX_NUMBER_OF_CLIENTS)
+        {
+            printf("Friend doest not exists\n");
+            friend = strtok(NULL, "|");
+            continue;
+        }
+
+        if (clientID == friendID)
+        {
+            printf("You cannot add yourself to your friends\n");
+            friend = strtok(NULL, "|");
+            continue;
+        }
+
         for (; i < clients[clientID].current_friends_number; i++)
         {
             if (friendID == clients[clientID].friends[i]) {
