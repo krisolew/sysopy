@@ -42,7 +42,7 @@ void receive_response(struct Message_t *message)
 void exec_init()
 {
     struct Message_t message;
-    char request[MAX_MESSAGE_LENGTH];
+    char request[MAX_MESSAGE_LENGTH] = "";
 
     sprintf(request, "%i", clientQueueID);
 
@@ -74,7 +74,7 @@ void exec_stop()
 
 void exec_echo(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    char command[MAX_MESSAGE_LENGTH] = "", text[MAX_MESSAGE_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s", command, text);
     if (numberOfArguments == EOF || numberOfArguments < 2) {
         printf("Echo expects one argument");
@@ -110,7 +110,7 @@ void exec_list()
 
 void exec_friends(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    char command[MAX_MESSAGE_LENGTH] = "", text[MAX_MESSAGE_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s", command, text);
     if (numberOfArguments == EOF || numberOfArguments == 0)
     {
@@ -122,7 +122,7 @@ void exec_friends(char args[MAX_MESSAGE_LENGTH])
 
 void exec_2one(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH], receiverId[MAX_MESSAGE_LENGTH];
+    char command[MAX_MESSAGE_LENGTH] = "", text[MAX_MESSAGE_LENGTH] = "", receiverId[MAX_MESSAGE_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s %s", command, receiverId, text);
     if (numberOfArguments == EOF || numberOfArguments < 3)
     {
@@ -134,7 +134,7 @@ void exec_2one(char args[MAX_MESSAGE_LENGTH])
 
 void exec_2friends(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    char command[MAX_MESSAGE_LENGTH] = "", text[MAX_MESSAGE_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s", command, text);
     if (numberOfArguments == EOF || numberOfArguments < 2)
     {
@@ -146,7 +146,7 @@ void exec_2friends(char args[MAX_MESSAGE_LENGTH])
 
 void exec_2all(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    char command[MAX_MESSAGE_LENGTH] = "", text[MAX_MESSAGE_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s", command, text);
     if (numberOfArguments == EOF || numberOfArguments < 2)
     {
@@ -158,7 +158,7 @@ void exec_2all(char args[MAX_MESSAGE_LENGTH])
 
 void exec_add(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    char command[MAX_MESSAGE_LENGTH] = "", text[MAX_MESSAGE_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s", command, text);
     if (numberOfArguments == EOF || numberOfArguments < 2)
     {
@@ -170,7 +170,7 @@ void exec_add(char args[MAX_MESSAGE_LENGTH])
 
 void exec_del(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_MESSAGE_LENGTH], text[MAX_MESSAGE_LENGTH];
+    char command[MAX_MESSAGE_LENGTH] = "", text[MAX_MESSAGE_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s", command, text);
     if (numberOfArguments == EOF || numberOfArguments < 2)
     {
@@ -182,7 +182,7 @@ void exec_del(char args[MAX_MESSAGE_LENGTH])
 
 void exec_read(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_COMMAND_LENGTH], fileName[MAX_COMMAND_LENGTH];
+    char command[MAX_COMMAND_LENGTH] = "", fileName[MAX_COMMAND_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s", command, fileName);
     if (numberOfArguments == EOF || numberOfArguments < 2) {
         printf("Read expects file name");
@@ -202,7 +202,7 @@ void exec_read(char args[MAX_MESSAGE_LENGTH])
 
 int execute_command(FILE *file)
 {
-    char args[MAX_MESSAGE_LENGTH], command[MAX_MESSAGE_LENGTH];
+    char args[MAX_MESSAGE_LENGTH] = "", command[MAX_MESSAGE_LENGTH] = "";
     if (fgets(args, MAX_MESSAGE_LENGTH * sizeof(char), file) == NULL) return EOF;
     int numberOfArguments = sscanf(args, "%s", command);
     if (numberOfArguments == EOF || numberOfArguments == 0) return 0;
