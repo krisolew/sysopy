@@ -5,7 +5,7 @@
 #define MAX_MESSAGE_LENGTH 500
 #define MAX_COMMAND_LENGTH 500
 #define NUMBER_OF_COMMANDS 10
-#define SERVER_KEY 's'
+#define SERVER_KEY 'u'
 
 enum Command_t
 {
