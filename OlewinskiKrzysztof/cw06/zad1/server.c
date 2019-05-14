@@ -16,7 +16,6 @@ struct Client_t
 
 struct Client_t clients[MAX_NUMBER_OF_CLIENTS];
 int queueID = -1;
-int stop = 0;
 
 void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH]);
 
@@ -295,12 +294,12 @@ void handle_message(struct Message_t *message) {
 
 void finishWork()
 {
-    printf("Turning off the server\n");
+    printf("\nTurning off the server\n");
 
     int i = 0;
     for (; i < MAX_NUMBER_OF_CLIENTS; i++) {
         if (clients[i].queueID != -1) {
-            kill(clients[i].pid, SIGINT);
+            kill(clients[i].pid, SIGUSR1);
         }
     }
 
@@ -309,7 +308,7 @@ void finishWork()
         return;
     }
 
-    stop = 1;
+    exit(0);
 }
 
 int main()
@@ -330,7 +329,7 @@ int main()
     }
 
     struct Message_t message;
-    while(!stop)
+    while(1)
     {
         if (msgrcv(queueID, &message, MSGSZ, -(NUMBER_OF_COMMANDS + 1), 0) == -1)
         {
@@ -339,8 +338,6 @@ int main()
         }
         handle_message(&message);
     }
-
-    msgctl(queueID, IPC_RMID, NULL);
 
     return 0;
 }
