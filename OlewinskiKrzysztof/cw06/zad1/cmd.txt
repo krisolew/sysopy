@@ -1,0 +1,12 @@
+ECHO cos
+ECHO cos
+ECHO cos
+ECHO cos
+ECHO cos
+ECHO cos
+ECHO cos
+ECHO cos
+LIST
+2ALL cos2
+2ALL cos2
+2ALL cos2
