@@ -176,7 +176,7 @@ void exec_2all(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     int i = 0;
     for (; i<MAX_NUMBER_OF_CLIENTS; i++)
     {
-        if (clients[i].queueID != -1) {
+        if (clients[i].queueID != -1 && i != senderId) {
             send_response(i, _2ALL, response);
             kill(clients[i].pid, SIGRTMIN);
         }
@@ -198,8 +198,8 @@ void exec_2friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     int i = 0;
     for (; i < clients[senderId].current_friends_number; i++)
     {
-        send_response(i, _2FRIENDS, response);
-        kill(clients[i].pid, SIGRTMIN);
+        send_response(clients[senderId].friends[i], _2FRIENDS, response);
+        kill(clients[clients[senderId].friends[i]].pid, SIGRTMIN);
     }
 }
 
@@ -294,7 +294,7 @@ void handle_message(struct Message_t *message) {
 
 void finishWork()
 {
-    printf("Turning off the server");
+    printf("Turning off the server\n");
 
     int i = 0;
     for (; i < MAX_NUMBER_OF_CLIENTS; i++) {
