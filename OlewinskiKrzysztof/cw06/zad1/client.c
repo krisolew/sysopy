@@ -238,6 +238,12 @@ int execute_command(FILE *file)
 void finishWork()
 {
     exec_stop();
+
+    if (msgctl(clientQueueID, IPC_RMID, NULL) == -1)
+    {
+        perror("Cannot remove client queue");
+    }
+
     stop = 1;
 }
 
@@ -279,12 +285,6 @@ int main()
     while(!stop)
     {
         execute_command(fdopen(STDIN_FILENO, "r"));
-    }
-
-    if (msgctl(clientQueueID, IPC_RMID, NULL) == -1)
-    {
-        perror("Cannot remove client queue");
-        return -1;
     }
     
     return 0;
