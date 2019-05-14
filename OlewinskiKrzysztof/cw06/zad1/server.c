@@ -72,6 +72,8 @@ void del_friends(int clientID, char list_of_friends[MAX_MESSAGE_LENGTH])
 
 void exec_stop(int senderId)
 {
+    printf("Received stop request from client %d", senderId);
+
     if ( senderId >=0 && senderId < MAX_NUMBER_OF_CLIENTS)
     {
         clients[senderId].queueID = -1;
@@ -87,6 +89,8 @@ void exec_stop(int senderId)
 
 void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    printf("Received echo request from client %d", senderId);
+
     char response[MAX_MESSAGE_LENGTH];
     char date[31];
     FILE *f = popen("date", "r");
@@ -98,6 +102,8 @@ void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    printf("Received init request from client %d", senderId);
+    
     int clientID, i=0;
     for( ; i<MAX_NUMBER_OF_CLIENTS; i++)
     {
@@ -125,6 +131,8 @@ void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_list(int senderId)
 {
+    printf("Received list request from client %d", senderId);
+
     char buf[MAX_MESSAGE_LENGTH], response[MAX_MESSAGE_LENGTH];
     int i = 0;
     for ( ; i < MAX_NUMBER_OF_CLIENTS; i++)
@@ -141,6 +149,8 @@ void exec_list(int senderId)
 
 void exec_friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    printf("Received friends request from client %d", senderId);
+
     char list_of_friends[MAX_MESSAGE_LENGTH];
 
     clients[senderId].current_friends_number = 0;
@@ -153,6 +163,8 @@ void exec_friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_2all(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    printf("Received 2all request from client %d", senderId);
+
     char response[MAX_MESSAGE_LENGTH];
     char date[31];
     FILE *f = popen("date", "r");
@@ -173,6 +185,8 @@ void exec_2all(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_2friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    printf("Received 2friends request from client %d", senderId);
+
     char response[MAX_MESSAGE_LENGTH];
     char date[31];
     FILE *f = popen("date", "r");
@@ -191,6 +205,8 @@ void exec_2friends(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    printf("Received 2one request from client %d", senderId);
+
     char text[MAX_MESSAGE_LENGTH-44], response[MAX_MESSAGE_LENGTH];        //TO DO do something with size of text
     int reciverId;
     char date[31];
@@ -207,6 +223,8 @@ void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_add(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    printf("Received add request from client %d", senderId);
+
     char list_of_friends[MAX_MESSAGE_LENGTH];
 
     if (sscanf(msgContent, "%s", list_of_friends) == 1)
@@ -217,6 +235,8 @@ void exec_add(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void exec_del(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
+    printf("Received del request from client %d", senderId);
+
     char list_of_friends[MAX_MESSAGE_LENGTH];
 
     if (sscanf(msgContent, "%s", list_of_friends) == 1)
@@ -227,6 +247,8 @@ void exec_del(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
 void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_LENGTH])
 {
+    printf("Sending response to client %d", clientID);
+
     struct Message_t message;
     message.type = type;
     strcpy(message.content, response);
@@ -272,6 +294,8 @@ void handle_message(struct Message_t *message) {
 
 void finishWork()
 {
+    printf("Turning off the server");
+
     int i = 0;
     for (; i < MAX_NUMBER_OF_CLIENTS; i++) {
         if (clients[i].queueID != -1) {
