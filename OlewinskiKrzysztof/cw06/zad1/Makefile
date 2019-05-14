@@ -3,5 +3,6 @@ all:
 	gcc -Wall server.c -o server
 
 clear:
-	rm client
-	rm server
+	rm -f client
+	rm -f server
+	rm -f queueCleaner
