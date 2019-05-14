@@ -236,10 +236,16 @@ int execute_command(FILE *file)
     return 0;
 }
 
+void finishWork()
+{
+    exec_stop();
+    stop = 1;
+}
+
 void signal_handler(int signalno)
 {
     struct Message_t message;
-    receive(&message);
+    receive_response(&message);
     switch (message.type) {
         case _2ALL:
         case _2FRIENDS:
@@ -249,13 +255,7 @@ void signal_handler(int signalno)
         case STOP:
             finishWork();
             break;
-}
-}
-
-void finishWork(int signalno)
-{
-    exec_stop();
-    stop = 1;
+    }
 }
 
 int main()
