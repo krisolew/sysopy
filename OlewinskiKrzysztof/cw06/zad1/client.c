@@ -13,9 +13,9 @@
 int serverQueueID = -1;
 int clientQueueID = -1;
 int clientID = -1;
-int stop = 0;
 
 int execute_command(FILE *file);
+void finish_work();
 
 void send_request(enum Command_t type, char request[MAX_MESSAGE_LENGTH])
 {
@@ -68,8 +68,8 @@ void exec_init()
 
 void exec_stop()
 {
-    stop = 1;
     send_request(STOP, "");
+    finish_work();
 }
 
 void exec_echo(char args[MAX_MESSAGE_LENGTH])
@@ -235,16 +235,20 @@ int execute_command(FILE *file)
     return 0;
 }
 
-void finishWork()
+void finish_work()
 {
-    exec_stop();
-
     if (msgctl(clientQueueID, IPC_RMID, NULL) == -1)
     {
         perror("Cannot remove client queue");
     }
 
-    stop = 1;
+    exit(0);
+}
+
+void exit_signal()
+{
+    exec_stop();
+    finish_work();
 }
 
 void signal_handler(int signalno)
@@ -258,14 +262,15 @@ void signal_handler(int signalno)
             printf("%s", message.content);
             break;
         case STOP:
-            finishWork();
+            finish_work();
             break;
     }
 }
 
 int main()
 {
-    signal(SIGINT, finishWork);
+    signal(SIGINT, exit_signal);
+    signal(SIGUSR1, finish_work);
     signal(SIGRTMIN, signal_handler);
 
     if ((serverQueueID = msgget(getServerQueueKey(), 0)) == -1)
@@ -282,7 +287,7 @@ int main()
 
     exec_init();
 
-    while(!stop)
+    while(1)
     {
         execute_command(fdopen(STDIN_FILENO, "r"));
     }
