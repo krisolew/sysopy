@@ -133,7 +133,8 @@ void exec_list(int senderId)
 {
     printf("Received list request from client %d\n", senderId);
 
-    char buf[MAX_MESSAGE_LENGTH], response[MAX_MESSAGE_LENGTH];
+    char buf[MAX_MESSAGE_LENGTH];
+    char response[MAX_MESSAGE_LENGTH];
     int i = 0;
     for ( ; i < MAX_NUMBER_OF_CLIENTS; i++)
     {
