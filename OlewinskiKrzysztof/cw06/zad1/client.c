@@ -182,7 +182,7 @@ void exec_del(char args[MAX_MESSAGE_LENGTH])
 
 void exec_read(char args[MAX_MESSAGE_LENGTH])
 {
-    char command[MAX_COMMAND_LENGTH] = "", fileName[MAX_COMMAND_LENGTH] = "";
+    char command[MAX_MESSAGE_LENGTH] = "", fileName[MAX_MESSAGE_LENGTH] = "";
     int numberOfArguments = sscanf(args, "%s %s", command, fileName);
     if (numberOfArguments == EOF || numberOfArguments < 2) {
         printf("Read expects file name");
