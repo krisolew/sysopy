@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <mqueue.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
 
 #define MAX_NUMBER_OF_CLIENTS 20
 #define MAX_MESSAGE_LENGTH 500
 #define NUMBER_OF_COMMANDS 10
-#define MAX_QUEUE_SIZE = 15
+#define MAX_QUEUE_SIZE 15
 #define SERVER_NAME "/serverQueue"
 
 enum Command_t
@@ -49,7 +54,7 @@ struct Message_t
 #define MSGSZ sizeof(struct Message_t)-sizeof(long) //msgsz doesn't contain mType
 
 char* getClientQueueName() {
-    char name[20];
+    char *name = malloc(20 * sizeof(char));
     sprintf(name, "client%i%i", getpid(), rand()%1024);
     return name;
 }
