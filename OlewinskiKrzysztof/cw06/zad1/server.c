@@ -336,7 +336,7 @@ void finishWork()
 
     if (msgctl(queueID, IPC_RMID, NULL) == -1){
         perror("Cannot remove server queue");
-        return;
+        exit(-1);
     }
 
     exit(0);
