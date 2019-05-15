@@ -6,3 +6,4 @@ all:
 
 clear:
 	rm -f trucker
+	rm -f *.[oa]
