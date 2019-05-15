@@ -38,12 +38,9 @@ void receive_response(struct Message_t *message)
 void exec_init()
 {
     struct Message_t message;
-    char request[MAX_MESSAGE_LENGTH] = "";
-
-    sprintf(request, "%i", clientQueueID);
 
     message.type = INIT;
-    strcpy(message.content, request);
+    strcpy(message.content, queueName);
     message.senderId = getpid();
 
     if (mq_send(serverQueueID, (char *) &message, MAX_MESSAGE_LENGTH, getCommandPriority(INIT)) == -1)
