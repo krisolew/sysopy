@@ -1,27 +1,17 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-#include <errno.h>
-#include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <ctype.h>
-#include <time.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/shm.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/wait.h>
-#include <sys/time.h>
+#include "belt.h"
 
+#define NUMBER 303
 
 int maxBeltCapacity;
 int currentBeltCapacity;
 int maxTruckCapacity;
 int currentTruckCapacity;
 int maxWeight;
+
+key_t key;
+int shmID = -1;
+
+void prepare_memory();
 
 int main(int argc, char *argv[])
 {
@@ -52,5 +42,32 @@ int main(int argc, char *argv[])
          return -1;
       }
 
-      printf("%d %d %d\n", maxTruckCapacity, maxBeltCapacity, maxWeight);
+      prepare_memory();
+}
+
+void prepare_memory()
+{
+   char *path = getenv("HOME");
+
+   if ((key = ftok(path, NUMBER)) == -1)
+   {
+      perror("Cannot create key");
+      return;
+   }
+
+   if ((shmID = shmget(key, sizeof(Belt), IPC_CREAT | IPC_EXCL | 0666)) == -1)
+   {
+      perror("Cannot create memory");
+      return;
+   }
+
+   void *add = shmat(shmID, NULL, 0);
+   if (add == (void*) -1)
+   {
+      perror("Cannot add memory");
+      return;
+   }
+
+   beltInit(maxWeight, maxBeltCapacity);
+
 }
