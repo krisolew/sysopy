@@ -1,5 +1,3 @@
-Zadania - zestaw 2
-
 Zapoznaj się ze składnią i operacjami wykonywanymi przez poniższe funkcje:
 
     funkcje operujące na plikach i katalogach: open, close, read, write, fcntl, stat, fstat, lstat, mkdir, rmdir, opendir, closedir, readdir, rewinddir, nftw, fopen, fclose, getc, putc,
