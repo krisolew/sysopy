@@ -147,12 +147,14 @@ void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
         return;
     }
 
-    int clientQueueId;
-    sscanf(msgContent, "%i", &clientQueueId);
+    if ((clients[clientID].queueID = mq_open(msgContent, O_WRONLY)) == -1)
+    {
+        perror("Cannot open client queue");
+        return;
+    }
 
     clients[clientID].pid = senderId;
     clients[clientID].current_friends_number = 0;
-    clients[clientID].queueID = clientQueueId;
 
     char response[MAX_MESSAGE_LENGTH] = "";
     sprintf(response, "%i", clientID);
