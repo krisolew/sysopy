@@ -50,6 +50,6 @@ struct Message_t
 
 char* getClientQueueName() {
     char *name = malloc(20 * sizeof(char));
-    sprintf(name, "client%i%i", getpid(), rand()%1024);
+    sprintf(name, "/client%i%i", getpid(), rand()%1024);
     return name;
 }
