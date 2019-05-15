@@ -1,4 +1,5 @@
 Zadanie - zestaw 3
+
 Tworzenie procesów. Środowisko procesu, sterowanie procesami.
 Zadanie 1. Drzewo procesów (15%)
 
@@ -15,6 +16,7 @@ Kopiowanie pliku może odbywać się na dwa sposoby: (tryb - trzeci argument pro
 Nazwa pliku utworzonej kopii to nazwa monitorowanego pliku, rozszerzona o datę modyfikacji pliku w formacie: _RRRR-MM-DD_GG-MM-SS.
 
 Napisz pomocniczy testowy program tester, przyjmujący argumenty: plik, pmin pmax i bytes, który do zadanego jako pierwszy argument pliku z losową częstością od pmin do pmax wyrażoną w sekundach dopisuje na jego koniec linię tekstu zawierającą pid procesu, wylosowaną liczbę sekund, aktualną datę i czas  (nie liczą się do liczby bajtów) oraz dowolnego ciągu znaków o długości określonej w bytes. Program ten pozwoli w krótkim czasie wygenerować kilka wersji kopii zapasowych.
+
 Zadanie 3. Zasoby procesów (35%)
 
 Zmodyfikuj program z Zadania 2 tak, aby każdy kopiujący proces miał nałożone pewne twarde ograniczenie na dostępny czas procesora oraz rozmiar pamięci wirtualnej. Wartości tych ograniczeń (odpowiednio w sekundach i megabajtach) powinny być przekazywane jako czwarty i piąty argument wywołania monitora. Ograniczenia powinny być nakładane przez proces potomny, w tym celu należy użyć funkcji setrlimit. Zakładamy, że wartości nakładanych ograniczeń są dużo niższe (t.j. bardziej restrykcyjne) niż ograniczenia, które system operacyjny narzuca na użytkownika uruchamiającego monitor.
