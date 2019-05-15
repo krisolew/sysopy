@@ -46,7 +46,7 @@ void exec_init()
     strcpy(message.content, request);
     message.senderId = getpid();
 
-    if (msgsnd(serverQueueID, &message, MSGSZ, IPC_NOWAIT) == -1)
+    if (mq_send(serverQueueID, (char *) &message, MAX_MESSAGE_LENGTH, getCommandPriority(INIT)) == -1)
     {
         perror("Cannot send request to server");
         return;
