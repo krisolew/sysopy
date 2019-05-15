@@ -4,7 +4,7 @@
 #define MAX_NUMBER_OF_CLIENTS 20
 #define MAX_MESSAGE_LENGTH 500
 #define NUMBER_OF_COMMANDS 10
-#define MAX_QUEUE_SIZE 15
+#define MAX_QUEUE_SIZE 10
 #define SERVER_NAME "/serverQueue"
 
 enum Command_t
