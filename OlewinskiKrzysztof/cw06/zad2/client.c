@@ -8,6 +8,7 @@
 int serverQueueID = -1;
 int clientQueueID = -1;
 int clientID = -1;
+char *queueName;
 
 int execute_command(FILE *file);
 void finish_work();
@@ -268,13 +269,19 @@ int main()
     signal(SIGUSR1, finish_work);
     signal(SIGRTMIN, signal_handler);
 
-    if ((serverQueueID = msgget(getServerQueueKey(), 0)) == -1)
+    queueName = getClientQueueName();
+
+    if ((serverQueueID = mq_open(SERVER_QUEUE_NAME, O_WRONLY)) == -1)
     {
         perror("Cannot create server queue");
         return -1;
     }
 
-    if ((clientQueueID = msgget(getClientQueueKey(), IPC_CREAT | IPC_EXCL | 0666)) == -1)
+    struct mq_attr queue_attr;
+    queue_attr.mq_maxmsg = MAX_QUEUE_SIZE;
+    queue_attr.mq_msgsize = MAX_MESSAGE_LENGTH;
+
+    if ((clientQueueID = mq_open(queueName, O_RDONLY | O_CREAT | O_EXCL, 0666, &queue_attr)) == -1)
     {
         perror("Cannot create client queue");
         return -1;
