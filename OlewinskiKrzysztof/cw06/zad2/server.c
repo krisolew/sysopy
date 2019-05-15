@@ -375,7 +375,7 @@ int main()
         if (mq_receive(queueID, (char *) &message, MAX_MESSAGE_LENGTH, NULL) == -1)
         {
             perror("Cannot receive message form queue");
-            return -1;
+            finishWork();
         }
         handle_message(&message);
     }
