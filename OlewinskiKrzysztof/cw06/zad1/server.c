@@ -133,7 +133,7 @@ void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
     printf("Received init request from client %d\n", senderId);
-    
+
     int clientID, i=0;
     for( ; i<MAX_NUMBER_OF_CLIENTS; i++)
     {
@@ -250,7 +250,7 @@ void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 
     if (clients[reciverId].queueID != -1)
     {
-      end_response(reciverId, _2ONE, response);
+      send_response(reciverId, _2ONE, response);
       kill(clients[reciverId].pid, SIGRTMIN);
     }
     else
