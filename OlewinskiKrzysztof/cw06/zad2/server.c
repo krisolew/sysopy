@@ -256,6 +256,12 @@ void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     sscanf(msgContent, "%i %s", &reciverId, text);
     sprintf(response, "%s ID: %i Date: %s\n", text, senderId, date);
 
+    if (reciverId > MAX_NUMBER_OF_CLIENTS || clients[reciverId].queueID == -1)
+    {
+      printf("There is no receiver\n");
+      return;
+    }
+
     send_response(reciverId, _2ONE, response);
     kill(clients[reciverId].pid, SIGRTMIN);
 }
