@@ -1,6 +1,7 @@
 #include "belt.h"
 
-#define NUMBER 303
+#define NUMBER 304
+#define NUM_OF_SEMAPHORES 4
 
 int maxBeltCapacity;
 int currentBeltCapacity;
@@ -10,14 +11,18 @@ int maxWeight;
 
 key_t key;
 int shmID = -1;
+Belt *fifo;
+int semID = -1;
 
 void prepare_memory();
+void prepare_semaphores();
+void finish_work();
 
 int main(int argc, char *argv[])
 {
       if (argc < 4)
       {
-         printf("Expected 4 arguments\n");
+         printf("Expected 3 arguments\n");
          return -1;
       }
 
@@ -43,6 +48,10 @@ int main(int argc, char *argv[])
       }
 
       prepare_memory();
+
+      prepare_semaphores();
+
+      finish_work();
 }
 
 void prepare_memory()
@@ -57,17 +66,63 @@ void prepare_memory()
 
    if ((shmID = shmget(key, sizeof(Belt), IPC_CREAT | IPC_EXCL | 0666)) == -1)
    {
-      perror("Cannot create memory");
+      perror("Cannot create shared memory");
       return;
    }
 
    void *add = shmat(shmID, NULL, 0);
    if (add == (void*) -1)
    {
-      perror("Cannot add memory");
+      perror("Cannot attache shared memory");
+      return;
+   }
+   fifo = (Belt *) add;
+
+   beltInit(maxWeight, maxBeltCapacity, fifo);
+}
+
+void prepare_semaphores()
+{
+   if((semID = semget(key, NUM_OF_SEMAPHORES, IPC_CREAT | IPC_EXCL | 0666)) == -1)
+   {
+      perror("Cannot create semaphores");
       return;
    }
 
-   beltInit(maxWeight, maxBeltCapacity);
+   int i = 1;
+   for (; i < 3; i++)
+   {
+      if (semctl(semID, i, SETVAL, 1) == -1)
+      {
+         perror("Cannot set semaphore");
+         return;
+      }
+   }
 
+   if (semctl(semID, TRUCKER, SETVAL, 0) == -1)
+   {
+      perror("Cannot set semaphore");
+      return;
+   }
+}
+
+void finish_work()
+{
+   if (shmdt(fifo) == -1)
+   {
+      perror("Cannot detache shared memory");
+      return;
+   }
+
+   if (shmctl(shmID, IPC_RMID, NULL) == -1)
+   {
+      perror("Cannot delete shared memory");
+      return;
+   }
+
+   if (semctl(semID, 0, IPC_RMID) == -1)
+   {
+      perror("Cannot delete semaphores");
+      return;
+   }
 }
