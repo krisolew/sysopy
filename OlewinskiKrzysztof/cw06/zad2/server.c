@@ -106,10 +106,16 @@ void exec_stop(int senderId)
 
     if ( senderId >=0 && senderId < MAX_NUMBER_OF_CLIENTS)
     {
-        clients[senderId].queueID = -1;
-        clients[senderId].current_friends_number = 0;
-        for (int i = 0; i < MAX_NUMBER_OF_CLIENTS; i++)
-            clients[senderId].friends[i] = -1;
+      if (mq_close(clients[senderId].queueID) == -1)
+      {
+         perror("Cannot close server queue");
+         return;
+      }
+
+      clients[senderId].queueID = -1;
+      clients[senderId].current_friends_number = 0;
+      for (int i = 0; i < MAX_NUMBER_OF_CLIENTS; i++)
+         clients[senderId].friends[i] = -1;
     }
     else
     {
@@ -133,7 +139,7 @@ void exec_echo(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 void exec_init(pid_t senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
     printf("Received init request from client %d\n", senderId);
-    
+
     int clientID, i=0;
     for( ; i<MAX_NUMBER_OF_CLIENTS; i++)
     {
