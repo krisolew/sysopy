@@ -16,6 +16,10 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
+typedef enum semType{
+    TRUCKER = 0, BELT = 1, LOADERS = 2
+}semType;
+
 typedef struct Box{
     int weight;
     pid_t pid;
