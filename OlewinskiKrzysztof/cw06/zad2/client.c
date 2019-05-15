@@ -1,16 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-#include <sys/msg.h>
 #include <signal.h>
-
-#include <sys/types.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <stdio.h>
 #include <mqueue.h>
-#include <stdio.h>
 
 #include "settings.h"
 

@@ -1,10 +1,5 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <mqueue.h>
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
 
 #define MAX_NUMBER_OF_CLIENTS 20
 #define MAX_MESSAGE_LENGTH 500
