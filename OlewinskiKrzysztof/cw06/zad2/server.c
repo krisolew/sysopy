@@ -1,7 +1,7 @@
 #include <stdlib.h>
-#include <sys/msg.h>
 #include <string.h>
 #include <signal.h>
+#include <mqueue.h>
 
 #include "settings.h"
 
@@ -170,7 +170,7 @@ void exec_list(int senderId)
     {
         if ( clients[i].queueID != -1)
         {
-            sprintf(buf, "Id: %i QueueID: %i\n", i, clients[i].queueID);
+            sprintf(buf, "Id: %i queueID: %i\n", i, clients[i].queueID);
             strcat(response,buf);
         }
     }
@@ -285,7 +285,7 @@ void send_response(int clientID, enum Command_t type, char response[MAX_MESSAGE_
     strcpy(message.content, response);
     message.senderId = -1;
 
-    if (msgsnd(clients[clientID].queueID, &message, MSGSZ, IPC_NOWAIT) == -1) perror("Cannot send response to client");
+    if (mq_send(clients[clientID].queueID, (char *) &message, MAX_MESSAGE_LENGTH, getCommandPriority(type)) == -1) perror("Cannot send response to client");
 }
 
 void handle_message(struct Message_t *message) {
@@ -334,9 +334,14 @@ void finishWork()
         }
     }
 
-    if (msgctl(queueID, IPC_RMID, NULL) == -1){
+    if (mq_close(queueID) == -1)
+    {
+        perror("Cannot close server queue");
+        exit(-1);
+    }
+    if (mq_unlink(SERVER_NAME) == -1){
         perror("Cannot remove server queue");
-        return;
+        exit(-1);
     }
 
     exit(0);
@@ -352,8 +357,11 @@ int main()
         clients[i].current_friends_number = 0;
     }
 
-    queueID = msgget(getServerQueueKey(), IPC_CREAT | IPC_EXCL | 0666);
-    if (queueID == -1)
+    struct mq_attr queue_attr;
+    queue_attr.mq_maxmsg = MAX_QUEUE_SIZE;
+    queue_attr.mq_msgsize = MAX_MESSAGE_LENGTH;
+
+    if ((queueID = mq_open(SERVER_NAME, O_RDONLY | O_CREAT | O_EXCL, 0666, &queue_attr)) == -1)
     {
         perror("Cannot create server queue");
         return -1;
@@ -362,7 +370,7 @@ int main()
     struct Message_t message;
     while(1)
     {
-        if (msgrcv(queueID, &message, MSGSZ, -(NUMBER_OF_COMMANDS + 1), 0) == -1)
+        if (mq_receive(queueID, (char *) &message, MAX_MESSAGE_LENGTH, NULL) == -1)
         {
             perror("Cannot receive message form queue");
             return -1;
