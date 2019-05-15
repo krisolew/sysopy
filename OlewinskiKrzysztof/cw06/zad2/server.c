@@ -246,7 +246,7 @@ void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
 {
     printf("Received 2one request from client %d\n", senderId);
 
-    char text[MAX_MESSAGE_LENGTH-44] = "", response[MAX_MESSAGE_LENGTH] = "";        //TO DO do something with size of text
+    char text[MAX_MESSAGE_LENGTH-44] = "", response[MAX_MESSAGE_LENGTH] = "";
     int reciverId;
     char date[31] = "";
     FILE *f = popen("date", "r");
