@@ -248,8 +248,15 @@ void exec_2one(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
     sscanf(msgContent, "%i %s", &reciverId, text);
     sprintf(response, "%s ID: %i Date: %s\n", text, senderId, date);
 
-    send_response(reciverId, _2ONE, response);
-    kill(clients[reciverId].pid, SIGRTMIN);
+    if (clients[reciverId].queueID != -1)
+    {
+      end_response(reciverId, _2ONE, response);
+      kill(clients[reciverId].pid, SIGRTMIN);
+    }
+    else
+    {
+      printf("There is no receiver");
+   }
 }
 
 void exec_add(int senderId, char msgContent[MAX_MESSAGE_LENGTH])
