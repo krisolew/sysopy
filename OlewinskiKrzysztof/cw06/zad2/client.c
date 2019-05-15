@@ -3,6 +3,15 @@
 #include <sys/msg.h>
 #include <signal.h>
 
+#include <sys/types.h>
+#include <limits.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <stdio.h>
+#include <mqueue.h>
+#include <stdio.h>
+
 #include "settings.h"
 
 int serverQueueID = -1;
@@ -20,7 +29,7 @@ void send_request(enum Command_t type, char request[MAX_MESSAGE_LENGTH])
     strcpy(message.content, request);
     message.senderId = clientID;
 
-    if (msgsnd(serverQueueID, &message, MSGSZ, IPC_NOWAIT) == -1)
+    if (mq_send(serverQueueID, (char *) &message, MAX_MESSAGE_LENGTH, getCommandPriority(type)) == -1)
     {
         perror("Cannot send request to server");
         return;
@@ -29,7 +38,7 @@ void send_request(enum Command_t type, char request[MAX_MESSAGE_LENGTH])
 
 void receive_response(struct Message_t *message)
 {
-    if (msgrcv(clientQueueID, message, MSGSZ, -(NUMBER_OF_COMMANDS + 1), 0) == -1)
+    if (mq_receive(clientQueueID, (char *) message, MAX_MESSAGE_LENGTH, NULL) == -1)
     {
         perror("Cannot receive server response");
     }
@@ -233,9 +242,20 @@ int execute_command(FILE *file)
 
 void finish_work()
 {
-    if (msgctl(clientQueueID, IPC_RMID, NULL) == -1)
+    if (mq_close(serverQueueID) == -1)
+    {
+        perror("Cannot close server queue");
+        exit(-1);
+    }
+    if (mq_close(clientQueueID) == -1)
+    {
+        perror("Cannot close client queue");
+        exit(-1);
+    }
+    if (mq_unlink(queueName) == -1)
     {
         perror("Cannot remove client queue");
+        exit(-1);
     }
 
     exit(0);
@@ -271,7 +291,7 @@ int main()
 
     queueName = getClientQueueName();
 
-    if ((serverQueueID = mq_open(SERVER_QUEUE_NAME, O_WRONLY)) == -1)
+    if ((serverQueueID = mq_open(SERVER_NAME, O_WRONLY)) == -1)
     {
         perror("Cannot create server queue");
         return -1;
