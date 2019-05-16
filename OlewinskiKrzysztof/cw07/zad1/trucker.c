@@ -1,6 +1,6 @@
 #include "belt.h"
 
-#define NUMBER 305
+#define NUMBER 312
 #define NUM_OF_SEMAPHORES 4
 
 int maxBeltCapacity;
@@ -147,7 +147,7 @@ void load_boxes()
       {
          if (currentTruckCapacity == maxTruckCapacity)
          {
-            printf("No free place - truck is going to be unloaded");
+            printf("No free place - truck is going to be unloaded\n");
             unload_truck();
          }
 
@@ -180,7 +180,7 @@ void load_boxes()
 void unload_truck()
 {
    currentTruckCapacity = 0;
-   printf("Truck had been unloaded and arrived empty");
+   printf("Truck had been unloaded and arrived empty\n");
 }
 
 void int_handler(int signo)
@@ -209,7 +209,7 @@ void finish_work()
    {
       if (currentTruckCapacity == maxTruckCapacity)
       {
-         printf("No free place - truck is going to be unloaded");
+         printf("No free place - truck is going to be unloaded\n");
          unload_truck();
       }
 
