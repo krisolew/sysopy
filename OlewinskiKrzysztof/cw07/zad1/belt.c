@@ -49,7 +49,7 @@ int belt_pop(Belt *belt, Box *box)
       return -1;
    }
 
-   box = &belt->fifo[belt->head++];
+   *box = belt->fifo[belt->head++];
    belt->curWeight -= box->weight;
    belt->curCapacity--;
 
