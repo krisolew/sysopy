@@ -142,7 +142,7 @@ void load_boxes()
       }
       semTaken = 1;
 
-      status = pop_from_belt(belt, &box);
+      status = belt_pop(belt, &box);
       while(status == 0)
       {
          if (currentTruckCapacity == maxTruckCapacity)
@@ -155,7 +155,7 @@ void load_boxes()
          printf("Box loaded on truck; weight: %d, pid: %d. Time from pop on belt to loaded on truck: %ld. Free places: %d\n",
          box.weight, box.pid, getMicroTime()-box.time, maxTruckCapacity-currentTruckCapacity);
 
-         status = pop_from_belt(belt, &box);
+         status = belt_pop(belt, &box);
       }
 
       sops.sem_num = BELT;
@@ -204,7 +204,7 @@ void finish_work()
       semTaken = 1;
    }
 
-   status = pop_from_belt(belt, &box);
+   status = belt_pop(belt, &box);
    while(status == 0)
    {
       if (currentTruckCapacity == maxTruckCapacity)
@@ -217,7 +217,7 @@ void finish_work()
       printf("Box loaded on truck; weight: %d, pid: %d. Time from pop on belt to loaded on truck: %ld. Free places: %d\n",
       box.weight, box.pid, getMicroTime()-box.time, maxTruckCapacity-currentTruckCapacity);
 
-      status = pop_from_belt(belt, &box);
+      status = belt_pop(belt, &box);
    }
 
    if (shmdt(belt) == -1)
