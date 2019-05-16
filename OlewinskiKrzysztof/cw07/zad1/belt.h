@@ -37,4 +37,6 @@ typedef struct Belt
    Box fifo[1024];
 }Belt;
 
-void beltInit(int max_weight, int max_capacity, Belt *fifo);
+void belt_init(int max_weight, int max_capacity, Belt *belt);
+int pop_from_belt(Belt *belt, Box *box);
+long getMicroTime();
