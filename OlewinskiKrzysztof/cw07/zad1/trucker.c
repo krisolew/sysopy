@@ -162,7 +162,7 @@ void load_boxes()
       sops.sem_op = 1;
       if ( semop(semID, &sops, 1) == - 1)
       {
-         perror("Cannot get blet semaphore");
+         perror("Cannot give back blet semaphore");
          return;
       }
       semTaken = 0;
@@ -171,7 +171,7 @@ void load_boxes()
       sops.sem_op = 1;
       if ( semop(semID, &sops, 1) == - 1)
       {
-         perror("Cannot get trucker semaphore");
+         perror("Cannot give back trucker semaphore");
          return;
       }
    }
@@ -179,16 +179,47 @@ void load_boxes()
 
 void unload_truck()
 {
-
+   currentTruckCapacity = 0;
+   printf("Truck had been unloaded and arrived empty");
 }
 
 void int_handler(int signo)
 {
-    exit(2);
+    exit(0);
 }
 
 void finish_work()
 {
+   if (!semTaken)
+   {
+      struct sembuf sops;
+      sops.sem_flg = 0;
+      sops.sem_num = BELT;
+      sops.sem_op = -1;
+      if ( semop(semID, &sops, 1) == - 1)
+      {
+         perror("Cannot take blet semaphore");
+         return;
+      }
+      semTaken = 1;
+   }
+
+   status = pop_from_belt(belt, &box);
+   while(status == 0)
+   {
+      if (currentTruckCapacity == maxTruckCapacity)
+      {
+         printf("No free place - truck is going to be unloaded");
+         unload_truck();
+      }
+
+      currentTruckCapacity++;
+      printf("Box loaded on truck; weight: %d, pid: %d. Time from pop on belt to loaded on truck: %ld. Free places: %d\n",
+      box.weight, box.pid, getMicroTime()-box.time, maxTruckCapacity-currentTruckCapacity);
+
+      status = pop_from_belt(belt, &box);
+   }
+
    if (shmdt(belt) == -1)
    {
       perror("Cannot detache shared memory");
