@@ -1,6 +1,6 @@
 #include "belt.h"
 
-#define NUMBER 304
+#define NUMBER 305
 #define NUM_OF_SEMAPHORES 4
 
 int maxBeltCapacity;
@@ -11,12 +11,18 @@ int maxWeight;
 
 key_t key;
 int shmID = -1;
-Belt *fifo;
+Belt *belt;
+Box box;
 int semID = -1;
+int semTaken = 0;
+int status;
 
 void prepare_memory();
 void prepare_semaphores();
+void load_boxes();
 void finish_work();
+void unload_truck();
+void int_handler(int signo);
 
 int main(int argc, char *argv[])
 {
@@ -47,11 +53,17 @@ int main(int argc, char *argv[])
          return -1;
       }
 
+      if (atexit(finish_work) == -1)
+      {
+         perror("Cannot set at exit operation");
+         return -1;
+      }
+
+      signal(SIGINT, int_handler);
+
       prepare_memory();
-
       prepare_semaphores();
-
-      finish_work();
+      load_boxes();
 }
 
 void prepare_memory()
@@ -76,9 +88,9 @@ void prepare_memory()
       perror("Cannot attache shared memory");
       return;
    }
-   fifo = (Belt *) add;
+   belt = (Belt *) add;
 
-   beltInit(maxWeight, maxBeltCapacity, fifo);
+   belt_init(maxWeight, maxBeltCapacity, belt);
 }
 
 void prepare_semaphores()
@@ -106,9 +118,78 @@ void prepare_semaphores()
    }
 }
 
+void load_boxes()
+{
+   struct sembuf sops;
+   sops.sem_flg = 0;
+
+   while(1)
+   {
+      sops.sem_num = TRUCKER;
+      sops.sem_op = -1;
+      if ( semop(semID, &sops, 1) == - 1)
+      {
+         perror("Cannot take trucker semaphore");
+         return;
+      }
+
+      sops.sem_num = BELT;
+      sops.sem_op = -1;
+      if ( semop(semID, &sops, 1) == - 1)
+      {
+         perror("Cannot take blet semaphore");
+         return;
+      }
+      semTaken = 1;
+
+      status = pop_from_belt(belt, &box);
+      while(status == 0)
+      {
+         if (currentTruckCapacity == maxTruckCapacity)
+         {
+            printf("No free place - truck is going to be unloaded");
+            unload_truck();
+         }
+
+         currentTruckCapacity++;
+         printf("Box loaded on truck; weight: %d, pid: %d. Time from pop on belt to loaded on truck: %ld. Free places: %d\n",
+         box.weight, box.pid, getMicroTime()-box.time, maxTruckCapacity-currentTruckCapacity);
+
+         status = pop_from_belt(belt, &box);
+      }
+
+      sops.sem_num = BELT;
+      sops.sem_op = 1;
+      if ( semop(semID, &sops, 1) == - 1)
+      {
+         perror("Cannot get blet semaphore");
+         return;
+      }
+      semTaken = 0;
+
+      sops.sem_num = TRUCKER;
+      sops.sem_op = 1;
+      if ( semop(semID, &sops, 1) == - 1)
+      {
+         perror("Cannot get trucker semaphore");
+         return;
+      }
+   }
+}
+
+void unload_truck()
+{
+
+}
+
+void int_handler(int signo)
+{
+    exit(2);
+}
+
 void finish_work()
 {
-   if (shmdt(fifo) == -1)
+   if (shmdt(belt) == -1)
    {
       perror("Cannot detache shared memory");
       return;
