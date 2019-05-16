@@ -1,6 +1,5 @@
 #include "belt.h"
 
-#define NUMBER 370
 #define NUM_OF_SEMAPHORES 4
 
 int maxBeltCapacity;
@@ -68,13 +67,7 @@ int main(int argc, char *argv[])
 
 void prepare_memory()
 {
-   char *path = getenv("HOME");
-
-   if ((key = ftok(path, NUMBER)) == -1)
-   {
-      perror("Cannot create key");
-      return;
-   }
+   key = get_belt_key();
 
    if ((shmID = shmget(key, sizeof(Belt), IPC_CREAT | IPC_EXCL | 0666)) == -1)
    {
@@ -137,7 +130,7 @@ void load_boxes()
       sops.sem_op = -1;
       if ( semop(semID, &sops, 1) == - 1)
       {
-         perror("Cannot take blet semaphore");
+         perror("Cannot take belt semaphore");
          return;
       }
       semTaken = 1;
@@ -153,7 +146,7 @@ void load_boxes()
 
          currentTruckCapacity++;
          printf("Box loaded on truck; weight: %d, pid: %d. Time from pop on belt to loaded on truck: %ld. Free places: %d\n",
-         box.weight, box.pid, getMicroTime()-box.time, maxTruckCapacity-currentTruckCapacity);
+         box.weight, box.pid, get_micro_time()-box.time, maxTruckCapacity-currentTruckCapacity);
 
          status = belt_pop(belt, &box);
       }
@@ -167,7 +160,7 @@ void load_boxes()
       }
       semTaken = 0;
 
-      sops.sem_num = TRUCKER;
+      sops.sem_num = LOADERS;
       sops.sem_op = 1;
       if ( semop(semID, &sops, 1) == - 1)
       {
@@ -215,7 +208,7 @@ void finish_work()
 
       currentTruckCapacity++;
       printf("Box loaded on truck; weight: %d, pid: %d. Time from pop on belt to loaded on truck: %ld. Free places: %d\n",
-      box.weight, box.pid, getMicroTime()-box.time, maxTruckCapacity-currentTruckCapacity);
+      box.weight, box.pid, get_micro_time()-box.time, maxTruckCapacity-currentTruckCapacity);
 
       status = belt_pop(belt, &box);
    }
