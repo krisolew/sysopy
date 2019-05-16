@@ -1,6 +1,6 @@
 #include "belt.h"
 
-#define NUMBER 312
+#define NUMBER 370
 #define NUM_OF_SEMAPHORES 4
 
 int maxBeltCapacity;
@@ -111,7 +111,7 @@ void prepare_semaphores()
       }
    }
 
-   if (semctl(semID, TRUCKER, SETVAL, 0) == -1)
+   if (semctl(semID, TRUCKER, SETVAL, 1) == -1)
    {
       perror("Cannot set semaphore");
       return;
