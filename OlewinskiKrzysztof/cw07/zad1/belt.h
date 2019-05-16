@@ -29,7 +29,7 @@ typedef struct Box{
 typedef struct Belt
 {
    int curWeight;
-   int curQuantity;
+   int curCapacity;
    int maxWeight;
    int maxCapacity;
    int head;
@@ -38,5 +38,8 @@ typedef struct Belt
 }Belt;
 
 void belt_init(int max_weight, int max_capacity, Belt *belt);
-int pop_from_belt(Belt *belt, Box *box);
+int belt_is_empty(Belt *belt);
+int belt_is_full(Belt *belt);
+int belt_pop(Belt *belt, Box *box);
+int belt_push(Belt *belt, Box box);
 long getMicroTime();
