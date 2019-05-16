@@ -59,9 +59,20 @@ int belt_pop(Belt *belt, Box *box)
    return 0;
 }
 
-long getMicroTime()
+long get_micro_time()
 {
     struct timespec marker;
     clock_gettime(CLOCK_MONOTONIC, &marker);
     return marker.tv_nsec / 1000;
+}
+
+key_t get_belt_key(){
+   char *path = getenv("HOME");
+   key_t key;
+   if ((key = ftok(path, NUMBER)) == -1)
+   {
+      perror("Cannot create key");
+      return -1;
+   }
+   return key;
 }

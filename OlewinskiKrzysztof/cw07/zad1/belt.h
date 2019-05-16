@@ -16,6 +16,8 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
+#define NUMBER 370
+
 typedef enum semType{
     TRUCKER = 0, BELT = 1, LOADERS = 2
 }semType;
@@ -42,4 +44,5 @@ int belt_is_empty(Belt *belt);
 int belt_is_full(Belt *belt);
 int belt_pop(Belt *belt, Box *box);
 int belt_push(Belt *belt, Box box);
-long getMicroTime();
+long get_micro_time();
+key_t get_belt_key();
