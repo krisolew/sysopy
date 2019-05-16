@@ -24,7 +24,7 @@ int belt_is_full(Belt *belt)
 
 int belt_push(Belt *belt, Box box)
 {
-   if ( belt_is_full(belt) || belt->curWeight + box.weight >= belt->maxWeight)
+   if ( belt_is_full(belt) || belt->curWeight + box.weight > belt->maxWeight)
    {
       return -1;
    }
