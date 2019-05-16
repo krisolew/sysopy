@@ -58,7 +58,7 @@ int main(int argc, char **argv)
     Box box;
     box.pid = getpid();
     box.weight = boxWeight;
-    while(!cycles || (--cycleNumber)){
+    while(!cycles || (cycleNumber--)){
         put_box(box);
     }
     exit(0);
@@ -87,6 +87,8 @@ void put_box(Box box)
    if(belt_push(belt, box) == -1)
    {
       printf("No free places on belt\n");
+      cycleNumber++;
+
       sops.sem_num = TRUCKER;
       sops.sem_op = 1;
       if ( semop(semID, &sops, 1) == - 1)
