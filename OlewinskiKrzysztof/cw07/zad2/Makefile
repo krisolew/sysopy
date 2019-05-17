@@ -1,10 +1,10 @@
 all:
-	gcc -c -Wall belt.c
+	gcc -c -Wall belt.c -lrt
 	ar rcs belt.a belt.o
-	gcc -c -Wall trucker.c
-	gcc trucker.o belt.a -o trucker
-	gcc -c -Wall loader.c
-	gcc loader.o belt.a -o loader
+	gcc -c -Wall trucker.c -lrt
+	gcc trucker.o belt.a -o trucker -lrt
+	gcc -c -Wall loader.c -lrt
+	gcc loader.o belt.a -o loader -lrt
 
 clear:
 	rm -f trucker

@@ -15,6 +15,11 @@ Box box;
 int semID = -1;
 int semTaken = 0;
 int status;
+int queue;
+
+sem_t *trucker_sem;
+sem_t *loaders_sem;
+sem_t *belt_sem;
 
 void prepare_memory();
 void prepare_semaphores();
@@ -69,71 +74,76 @@ void prepare_memory()
 {
    key = get_belt_key();
 
-   if ((shmID = shmget(key, sizeof(Belt), IPC_CREAT | IPC_EXCL | 0666)) == -1)
+   if ((shmID = shm_open("belt_memory", O_CREAT | O_EXCL | O_RDWR, 0666)) == -1)
    {
       perror("Cannot create shared memory");
       return;
    }
 
-   void *add = shmat(shmID, NULL, 0);
+   if (ftruncate(shmID, sizeof(Belt)) == -1)
+   {
+      perror("Cannot set size of shared memory");
+      return;
+   }
+
+   void *add = mmap(NULL, sizeof(Belt), PROT_READ | PROT_WRITE, MAP_SHARED, shmID, 0);
    if (add == (void*) -1)
    {
       perror("Cannot attache shared memory");
       return;
    }
    belt = (Belt *) add;
-
    belt_init(maxWeight, maxBeltCapacity, belt);
+
+   struct mq_attr queue_attr;
+   queue_attr.mq_maxmsg = 10;
+   queue_attr.mq_msgsize = 10;
+
+   if ((queue = mq_open("/pidQueue",O_CREAT | O_EXCL | O_RDONLY | O_NONBLOCK, 0666, &queue_attr)) == -1){
+      perror("Canot create queue");
+      return;
+   }
 }
 
 void prepare_semaphores()
 {
-   if((semID = semget(key, NUM_OF_SEMAPHORES, IPC_CREAT | IPC_EXCL | 0666)) == -1)
+   trucker_sem = sem_open("trucker_sem", O_CREAT | O_EXCL | O_RDWR, 0666, 0);
+   if (trucker_sem == SEM_FAILED)
    {
-      perror("Cannot create semaphores");
+      perror("Cannot create trucker semaphore");
       return;
    }
 
-   int i = 1;
-   for (; i < 3; i++)
+   loaders_sem = sem_open("loaders_sem",O_CREAT | O_EXCL | O_RDWR, 0666, 1);
+   if (loaders_sem == SEM_FAILED)
    {
-      if (semctl(semID, i, SETVAL, 1) == -1)
-      {
-         perror("Cannot set semaphore");
-         return;
-      }
+      perror("Cannot create loader semaphore");
+      return;
    }
 
-   if (semctl(semID, TRUCKER, SETVAL, 1) == -1)
+   belt_sem = sem_open("belt_sem",O_CREAT | O_EXCL | O_RDWR, 0666, 1);
+   if (belt_sem == SEM_FAILED)
    {
-      perror("Cannot set semaphore");
+      perror("Cannot create belt semaphore");
       return;
    }
 }
 
 void load_boxes()
 {
-   struct sembuf sops;
-   sops.sem_flg = 0;
-
    while(1)
    {
-      sops.sem_num = TRUCKER;
-      sops.sem_op = -1;
-      if ( semop(semID, &sops, 1) == - 1)
+      if (sem_wait(trucker_sem)  == - 1)
       {
          perror("Cannot take trucker semaphore");
          return;
       }
 
-      sops.sem_num = BELT;
-      sops.sem_op = -1;
-      if ( semop(semID, &sops, 1) == - 1)
+      if (sem_wait(belt_sem) == - 1)
       {
          perror("Cannot take belt semaphore");
          return;
       }
-      semTaken = 1;
 
       status = belt_pop(belt, &box);
       while(status == 0)
@@ -151,20 +161,15 @@ void load_boxes()
          status = belt_pop(belt, &box);
       }
 
-      sops.sem_num = BELT;
-      sops.sem_op = 1;
-      if ( semop(semID, &sops, 1) == - 1)
+      if (sem_post(belt_sem) == - 1)
       {
          perror("Cannot give back blet semaphore");
          return;
       }
-      semTaken = 0;
 
-      sops.sem_num = LOADERS;
-      sops.sem_op = 1;
-      if ( semop(semID, &sops, 1) == - 1)
+      if (sem_post(loaders_sem) == - 1)
       {
-         perror("Cannot give back trucker semaphore");
+         perror("Cannot give back loader semaphore");
          return;
       }
    }
@@ -183,51 +188,84 @@ void int_handler(int signo)
 
 void finish_work()
 {
-   if (!semTaken)
-   {
-      struct sembuf sops;
-      sops.sem_flg = 0;
-      sops.sem_num = BELT;
-      sops.sem_op = -1;
-      if ( semop(semID, &sops, 1) == - 1)
-      {
-         perror("Cannot take blet semaphore");
-         return;
-      }
-      semTaken = 1;
+   char pid[10];
+   int i;
+   while(mq_receive(queue, pid, 10, NULL) != -1){
+      i = strtol(pid,NULL,10);
+      kill(i, SIGINT);
    }
 
-   status = belt_pop(belt, &box);
-   while(status == 0)
+   if (mq_close(queue) == -1)
    {
-      if (currentTruckCapacity == maxTruckCapacity)
-      {
-         printf("No free place - truck is going to be unloaded\n");
-         unload_truck();
-      }
+      perror("Cannot close queue");
+      return;
+   }
+   if (mq_unlink("/pidQueue") == -1)
+   {
+      perror("Cannot remove queue");
+      return;
+   }
 
-      currentTruckCapacity++;
-      printf("Box loaded on truck; weight: %d, pid: %d. Time from pop on belt to loaded on truck: %ld. Free places: %d\n",
-      box.weight, box.pid, get_micro_time()-box.time, maxTruckCapacity-currentTruckCapacity);
-
+   if (belt_sem != NULL && belt != NULL)
+   {
       status = belt_pop(belt, &box);
+      while(status == 0)
+      {
+         if (currentTruckCapacity == maxTruckCapacity)
+         {
+            printf("No free place - truck is going to be unloaded\n");
+            unload_truck();
+         }
+
+         currentTruckCapacity++;
+         printf("Box loaded on truck; weight: %d, pid: %d. Time from pop on belt to loaded on truck: %ld. Free places: %d\n",
+         box.weight, box.pid, get_micro_time()-box.time, maxTruckCapacity-currentTruckCapacity);
+
+         status = belt_pop(belt, &box);
+      }
    }
 
-   if (shmdt(belt) == -1)
+   if (munmap(belt, sizeof(belt)) == -1)
    {
       perror("Cannot detache shared memory");
       return;
    }
 
-   if (shmctl(shmID, IPC_RMID, NULL) == -1)
+   if (shm_unlink("belt_memory") == -1)
    {
       perror("Cannot delete shared memory");
       return;
    }
-
-   if (semctl(semID, 0, IPC_RMID) == -1)
+   if(sem_close(trucker_sem) == -1)
    {
-      perror("Cannot delete semaphores");
+      perror("Cannot detache trucker semaphores");
+      return;
+   }
+   if (sem_unlink("trucker_sem") == -1)
+   {
+      perror("Cannot delete trucker semaphores");
+      return;
+   }
+
+   if(sem_close(loaders_sem) == -1)
+   {
+      perror("Cannot detache loader semaphores");
+      return;
+   }
+   if (sem_unlink("loaders_sem") == -1)
+   {
+      perror("Cannot delete loader semaphores");
+      return;
+   }
+
+   if(sem_close(belt_sem) == -1)
+   {
+      perror("Cannot detache belt semaphores");
+      return;
+   }
+   if (sem_unlink("belt_sem") == -1)
+   {
+      perror("Cannot delete belt semaphores");
       return;
    }
 }

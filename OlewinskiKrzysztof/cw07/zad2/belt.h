@@ -10,11 +10,13 @@
 #include <time.h>
 #include <signal.h>
 #include <sys/types.h>
-#include <sys/shm.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
 #include <sys/time.h>
+#include <semaphore.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <mqueue.h>
 
 #define NUMBER 370
 
@@ -38,6 +40,11 @@ typedef struct Belt
    int tail;
    Box fifo[1024];
 }Belt;
+
+typedef struct pid_table{
+    pid_t pids[1024];
+    int size;
+}pid_table;
 
 void belt_init(int max_weight, int max_capacity, Belt *belt);
 int belt_is_empty(Belt *belt);
