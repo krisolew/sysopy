@@ -9,7 +9,7 @@ int semID = -1;
 int boxWeight;
 int cycleNumber;
 
-void prepare_fifo();
+void prepare_memory();
 void prepare_semaphores();
 void finish_work(void);
 void int_handler(int signo);
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
    }
 
     key = get_belt_key();
-    prepare_fifo();
+    prepare_memory();
     prepare_semaphores();
 
     if (atexit(finish_work) == -1)
@@ -124,7 +124,7 @@ void put_box(Box box)
    }
 }
 
-void prepare_fifo()
+void prepare_memory()
 {
    shmID = shmget(key, 0, 0);
    if (shmID == -1)
