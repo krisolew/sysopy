@@ -1,4 +1,4 @@
-
+#define _GNU_SOURCE
 #include "belt.h"
 
 Belt *belt = NULL;

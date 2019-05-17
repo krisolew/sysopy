@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "belt.h"
 
 #define NUM_OF_SEMAPHORES 4
