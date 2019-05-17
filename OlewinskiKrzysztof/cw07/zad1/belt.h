@@ -16,7 +16,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-#define NUMBER 370
+#define NUMBER 371
 
 typedef enum semType{
     TRUCKER = 0, BELT = 1, LOADERS = 2
