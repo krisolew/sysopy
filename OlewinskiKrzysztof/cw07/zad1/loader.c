@@ -3,7 +3,6 @@
 
 Belt *belt = NULL;
 key_t key;
-sigset_t fullMask;
 int shmID = -1;
 int semID = -1;
 int boxWeight;

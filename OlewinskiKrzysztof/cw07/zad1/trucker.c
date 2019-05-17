@@ -104,7 +104,7 @@ void prepare_semaphores()
       }
    }
 
-   if (semctl(semID, TRUCKER, SETVAL, 1) == -1)
+   if (semctl(semID, TRUCKER, SETVAL, 0) == -1)
    {
       perror("Cannot set semaphore");
       return;
@@ -164,7 +164,7 @@ void load_boxes()
       sops.sem_op = 1;
       if ( semop(semID, &sops, 1) == - 1)
       {
-         perror("Cannot give back trucker semaphore");
+         perror("Cannot give back loader semaphore");
          return;
       }
    }
