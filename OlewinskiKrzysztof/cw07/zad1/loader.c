@@ -140,6 +140,12 @@ void prepare_fifo()
       return;
    }
    belt = (Belt *) add;
+
+   if (belt->maxWeight < boxWeight)
+   {
+      printf("Box is to heavy\n");
+      exit(1);
+   }
 }
 
 void prepare_semaphores()
