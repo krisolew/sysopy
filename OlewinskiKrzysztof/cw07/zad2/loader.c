@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 
 void put_box(Box box)
 {
-   if (sem_wait(loader_sem)  == - 1)
+   if (sem_wait(loaders_sem)  == - 1)
    {
       perror("Cannot take loader semaphore");
       return;
@@ -170,12 +170,6 @@ void prepare_semaphores()
 void finish_work(void)
 {
    if (munmap(belt, sizeof(belt)) == -1)
-   {
-      perror("Cannot detache shared memory");
-      return;
-   }
-
-   if (shmdt(belt) == -1)
    {
       perror("Cannot detache shared memory");
       return;
