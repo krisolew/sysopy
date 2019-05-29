@@ -1,19 +1,23 @@
-
+#define _GNU_SOURCE
 #include "belt.h"
 
 Belt *belt = NULL;
 key_t key;
-sigset_t fullMask;
 int shmID = -1;
 int semID = -1;
 int boxWeight;
 int cycleNumber;
+int queue;
+sem_t *trucker_sem;
+sem_t *loaders_sem;
+sem_t *belt_sem;
 
-void prepare_fifo();
+void prepare_memory();
 void prepare_semaphores();
 void finish_work(void);
 void int_handler(int signo);
 void put_box(Box box);
+void write_pid();
 
 int main(int argc, char **argv)
 {
@@ -44,8 +48,9 @@ int main(int argc, char **argv)
    }
 
     key = get_belt_key();
-    prepare_fifo();
+    prepare_memory();
     prepare_semaphores();
+    write_pid();
 
     if (atexit(finish_work) == -1)
     {
@@ -66,22 +71,18 @@ int main(int argc, char **argv)
 
 void put_box(Box box)
 {
-   struct sembuf sops;
-   sops.sem_num = LOADERS;
-   sops.sem_op = -1;
-   sops.sem_flg = 0;
-   if (semop(semID, &sops, 1) == -1)
+   if (sem_wait(loaders_sem)  == - 1)
    {
       perror("Cannot take loader semaphore");
       return;
    }
 
-   sops.sem_num = BELT;
-   if (semop(semID, &sops, 1) == -1)
+   if (sem_wait(belt_sem) == - 1)
    {
       perror("Cannot take belt semaphore");
       return;
    }
+
 
    box.time = get_micro_time();
    if(belt_push(belt, box) == -1)
@@ -89,34 +90,28 @@ void put_box(Box box)
       printf("No free places on belt\n");
       cycleNumber++;
 
-      sops.sem_num = TRUCKER;
-      sops.sem_op = 1;
-      if ( semop(semID, &sops, 1) == - 1)
+      if (sem_post(trucker_sem) == - 1)
       {
-         perror("Cannot wake trucker");
+         perror("Cannot give back trucker semaphore");
          return;
       }
-      sops.sem_num = BELT;
-      sops.sem_op = 1;
-      if ( semop(semID, &sops, 1) == - 1)
+
+      if (sem_post(belt_sem) == - 1)
       {
-         perror("Cannot give back belt semaphore");
+         perror("Cannot give back blet semaphore");
          return;
       }
    }
    else
    {
       printf("Put box; size: %d time: %ld \n",box.weight, box.time);
-      sops.sem_num = BELT;
-      sops.sem_op = 1;
-      if ( semop(semID, &sops, 1) == - 1)
+      if (sem_post(belt_sem) == - 1)
       {
-         perror("Cannot give backbelt semaphore");
+         perror("Cannot give back blet semaphore");
          return;
       }
-      sops.sem_num = LOADERS;
-      sops.sem_op = 1;
-      if ( semop(semID, &sops, 1) == - 1)
+
+      if (sem_post(loaders_sem) == - 1)
       {
          perror("Cannot give back loader semaphore");
          return;
@@ -124,16 +119,16 @@ void put_box(Box box)
    }
 }
 
-void prepare_fifo()
+void prepare_memory()
 {
-   shmID = shmget(key, 0, 0);
+   shmID = shm_open("belt_memory", O_RDWR, 0666);
    if (shmID == -1)
    {
       perror("Cannot get shared memory");
       return;
    }
 
-   void *add = shmat(shmID, NULL, 0);
+   void *add = mmap(NULL, sizeof(Belt), PROT_READ | PROT_WRITE, MAP_SHARED, shmID, 0);
    if (add == (void*) -1)
    {
       perror("Cannot attache shared memory");
@@ -150,21 +145,74 @@ void prepare_fifo()
 
 void prepare_semaphores()
 {
-   semID = semget(key, 0, 0);
-   if (semID == -1)
+   trucker_sem = sem_open("trucker_sem", O_RDWR);
+   if (trucker_sem == SEM_FAILED)
    {
-      perror("Cannot get semaphores");
+      perror("Cannot create trucker semaphore");
+      return;
+   }
+
+   loaders_sem = sem_open("loaders_sem", O_RDWR);
+   if (loaders_sem == SEM_FAILED)
+   {
+      perror("Cannot create loader semaphore");
+      return;
+   }
+
+   belt_sem = sem_open("belt_sem", O_RDWR);
+   if (belt_sem == SEM_FAILED)
+   {
+      perror("Cannot create belt semaphore");
       return;
    }
 }
 
 void finish_work(void)
 {
-   if (shmdt(belt) == -1)
+   if (munmap(belt, sizeof(belt)) == -1)
    {
       perror("Cannot detache shared memory");
       return;
    }
+
+   if(sem_close(trucker_sem) == -1)
+   {
+      perror("Cannot detache trucker semaphores");
+      return;
+   }
+
+   if(sem_close(loaders_sem) == -1)
+   {
+      perror("Cannot detache loader semaphores");
+      return;
+   }
+
+   if(sem_close(belt_sem) == -1)
+   {
+      perror("Cannot detache belt semaphores");
+      return;
+   }
+}
+
+void write_pid(){
+    if ((queue = mq_open("/pidQueue", O_WRONLY)) == -1)
+    {
+      perror("Cannot open queue");
+      return;
+    }
+
+    char pid[10];
+    sprintf(pid,"%d",getpid());
+    if (mq_send(queue, pid, 10, 1) != 0)
+    {
+        perror("Cannot send pid");
+    }
+
+    if (mq_close(queue) == -1)
+    {
+      perror("Cannot close queue");
+    }
+
 }
 
 void int_handler(int signo)
