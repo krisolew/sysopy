@@ -1,0 +1,9 @@
+*.tar
+*.o
+*.dll
+*.so
+*.so.*
+*.lib
+*.a
+*.la
+*.lo
