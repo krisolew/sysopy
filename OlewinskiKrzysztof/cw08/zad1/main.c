@@ -17,17 +17,6 @@
 #include <mqueue.h>
 #include <pthread.h>
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <string.h>
-#include <math.h>
 
 int **image = NULL;
 int **result = NULL;
@@ -255,7 +244,7 @@ int main(int argc, char **argv){
     else
     {
       perror("Unsupported calculation mode");
-      return -1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      return -1;
     }
 
     for(i = 0; i < thread_count; i++){
