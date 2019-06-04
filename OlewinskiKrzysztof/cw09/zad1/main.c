@@ -68,7 +68,6 @@ int main(int argc, char **argv){
     run_number = strtol(argv[4],NULL,10);
     working_cars = car_number;
 
-
     car_order_condition = malloc(sizeof(pthread_cond_t));
     car_present_condition = malloc(sizeof(pthread_cond_t));
     car_finish_order_cond = malloc(sizeof(pthread_cond_t));
@@ -109,7 +108,6 @@ int main(int argc, char **argv){
       perror("Mutex initialization error ");
       return -1;
     }
-
 
     cars = malloc(car_number*sizeof(Car*));
     car_threads = malloc(car_number*sizeof(pthread_t*));
@@ -170,6 +168,8 @@ void *car_function(void *args){
         pthread_cond_broadcast(&own->status);
         pthread_mutex_unlock(&own->access);
 
+        //Wysiadanie z wagonika
+
         pthread_mutex_lock(&own->access);
         while(own->current_people_number != 0){
             pthread_cond_wait(&own->status_change,&own->access);
@@ -183,6 +183,7 @@ void *car_function(void *args){
         pthread_mutex_unlock(&own->access);
         pthread_mutex_unlock(car_access_mutex);
 
+        //wsiadanie do wagonika
 
         pthread_mutex_lock(&own->access);
         while(own->current_people_number != car_capacity){
@@ -192,6 +193,8 @@ void *car_function(void *args){
         own->car_status = 1;
         pthread_cond_broadcast(&own->status);
         pthread_mutex_unlock(&own->access);
+
+        //oczekiwanie na start
 
         pthread_mutex_lock(&own->access);
         while(own->car_status != 2){
@@ -241,13 +244,11 @@ void *person_function(void *args){
         }
         my_car = current_car;
         pthread_mutex_lock(&my_car->access);
-        // while(current_car->car_status != 0 || current_car->current_people_number == car_capacity){
-        //     pthread_cond_wait(car_present_condition,&my_car->access);
-        // }
 
         my_car->current_people_number++;
         printf("Person %d gets in car %d. Currently %d people in car \n",i,my_car->order_number,my_car->current_people_number);
 
+        ///////WHY
         if(my_car-> current_people_number == car_capacity){
             pthread_cond_broadcast(&my_car->status_change);
         }
@@ -260,7 +261,6 @@ void *person_function(void *args){
             pthread_cond_wait(&my_car->status,&my_car->access);
         }
         if(current_car->car_status == 1 && !(my_car->tries_count--)){
-            same = 0;
             my_car->car_status = 2;
             printf("Person %d clicked start button in car %d \n",i,my_car->order_number);
             pthread_cond_broadcast(&my_car->status_change);
@@ -305,32 +305,26 @@ void free_res(){
     if(pthread_cond_destroy(car_order_condition) != 0)
     {
       perror("Condition variables destroing error");
-      return -1;
     }
     if(pthread_cond_destroy(car_present_condition) != 0)
     {
       perror("Condition variables destroing error");
-      return -1;
     }
     if(pthread_cond_destroy(car_finish_order_cond) != 0)
     {
       perror("Condition variables destroing error");
-      return -1;
     }
     if(pthread_mutex_destroy(car_access_mutex) != 0)
     {
       perror("Mutex destroing error");
-      return -1;
     }
     if(pthread_mutex_destroy(car_stop_access_mutex) != 0)
     {
       perror("Mutex destroing error");
-      return -1;
     }
     if(pthread_mutex_destroy(car_finish_mutex) != 0)
     {
       perror("Mutex destroing error");
-      return -1;
     }
 
     free(car_order_condition);
