@@ -1,4 +1,4 @@
-#include <stdio.h>
+status_for_person#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -24,8 +24,8 @@ typedef struct Car{
     int run_number;
     int tries_count;
     pthread_mutex_t access;
-    pthread_cond_t status;
-    pthread_cond_t status_change;
+    pthread_cond_t status_for_car;
+    pthread_cond_t status_for_person;
 }Car;
 
 struct timeval getTime();
@@ -142,14 +142,14 @@ Car *car_init(int order_number){
     car->car_status = 0;
     car->run_number = run_number;
     pthread_mutex_init(&car->access,NULL);
-    pthread_cond_init(&car->status,NULL);
-    pthread_cond_init(&car->status_change,NULL);
+    pthread_cond_init(&car->status_for_car,NULL);
+    pthread_cond_init(&car->status_for_person,NULL);
     return car;
 }
 
 void car_destroy(Car *car){
-    pthread_cond_destroy(&car->status);
-    pthread_cond_destroy(&car->status_change);
+    pthread_cond_destroy(&car->status_for_car);
+    pthread_cond_destroy(&car->status_for_person);
     pthread_mutex_destroy(&car->access);
 }
 
@@ -165,14 +165,14 @@ void *car_function(void *args){
         pthread_mutex_lock(&own->access);
         printf("Car %d arrived to car stop \n",own->order_number);
         own->car_status = 3;
-        pthread_cond_broadcast(&own->status);
+        pthread_cond_broadcast(&own->status_for_car);
         pthread_mutex_unlock(&own->access);
 
         //Wysiadanie z wagonika
 
         pthread_mutex_lock(&own->access);
         while(own->current_people_number != 0){
-            pthread_cond_wait(&own->status_change,&own->access);
+            pthread_cond_wait(&own->status_for_person,&own->access);
         }
         own->run_number--;
         if(own->run_number < 0) {
@@ -187,18 +187,18 @@ void *car_function(void *args){
 
         pthread_mutex_lock(&own->access);
         while(own->current_people_number != car_capacity){
-            pthread_cond_wait(&own->status_change,&own->access);
+            pthread_cond_wait(&own->status_for_person,&own->access);
         }
         own->tries_count = rand() % car_capacity;
         own->car_status = 1;
-        pthread_cond_broadcast(&own->status);
+        pthread_cond_broadcast(&own->status_for_car);
         pthread_mutex_unlock(&own->access);
 
         //oczekiwanie na start
 
         pthread_mutex_lock(&own->access);
         while(own->car_status != 2){
-            pthread_cond_wait(&own->status_change,&own->access);
+            pthread_cond_wait(&own->status_for_person,&own->access);
         }
         printf("Car %d starts run \n",own->order_number);
         current_order = (current_order + 1) % car_number;
@@ -250,7 +250,7 @@ void *person_function(void *args){
 
         ///////WHY
         if(my_car-> current_people_number == car_capacity){
-            pthread_cond_broadcast(&my_car->status_change);
+            pthread_cond_broadcast(&my_car->status_for_person);
         }
         pthread_mutex_unlock(&my_car->access);
 
@@ -258,22 +258,22 @@ void *person_function(void *args){
 
         pthread_mutex_lock(&my_car->access);
         while(my_car->car_status == 0){
-            pthread_cond_wait(&my_car->status,&my_car->access);
+            pthread_cond_wait(&my_car->status_for_car,&my_car->access);
         }
         if(current_car->car_status == 1 && !(my_car->tries_count--)){
             my_car->car_status = 2;
             printf("Person %d clicked start button in car %d \n",i,my_car->order_number);
-            pthread_cond_broadcast(&my_car->status_change);
+            pthread_cond_broadcast(&my_car->status_for_person);
         }
         pthread_mutex_unlock(&my_car->access);
 
         pthread_mutex_lock(&my_car->access);
         while(my_car->car_status <= 2){
-            pthread_cond_wait(&my_car->status,&my_car->access);
+            pthread_cond_wait(&my_car->status_for_car,&my_car->access);
         }
         my_car->current_people_number--;
         printf("Person %d gets off car %d. Currently %d people in car\n",i,my_car->order_number,my_car->current_people_number);
-        pthread_cond_broadcast(&my_car->status_change);
+        pthread_cond_broadcast(&my_car->status_for_person);
         pthread_mutex_unlock(&my_car->access);
     }
     printf("Person %d finishes work \n",i);
