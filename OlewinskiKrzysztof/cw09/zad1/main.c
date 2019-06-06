@@ -248,7 +248,6 @@ void *person_function(void *args){
         my_car->current_people_number++;
         printf("Person %d gets in car %d. Currently %d people in car \n",i,my_car->order_number,my_car->current_people_number);
 
-        ///////WHY
         if(my_car-> current_people_number == car_capacity){
             pthread_cond_broadcast(&my_car->status_for_person);
         }
