@@ -1,4 +1,4 @@
-status_for_person#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
