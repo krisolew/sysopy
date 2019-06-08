@@ -47,10 +47,4 @@ typedef struct Client {
     socklen_t socklen;
 } Client;
 
-
-void raise_error(char* message){
-    fprintf(stderr, "%s :: %s \n", message, strerror(errno));
-    exit(1);
-}
-
 #endif //SOCKETS_COMMON_H

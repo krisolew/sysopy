@@ -11,7 +11,6 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
-
 char *name;
 enum connect_type c_type;
 int client_socket;
@@ -20,7 +19,6 @@ int request_counter = 0;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t request1_mutex = PTHREAD_MUTEX_INITIALIZER;
-//pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
 
 void init(char *connection_type, char *server_ip_path, char *port);
 
@@ -52,16 +50,11 @@ int main(int argc, char *argv[]) {
 }
 
 void* handle_request(void* arg) {
-
-
     struct request_t* got_arg = arg;
     struct request_t req;
     strcpy(req.text, got_arg->text);
     req.ID = got_arg->ID;
 
-    //printf("HALKOOOO \n");
-
-    //printf("STARTED WITH: %s\n", req.text);
     char *buffer = malloc(100 + 2 * strlen(req.text));
     char *buffer_res = malloc(100 + 2 * strlen(req.text));
 
@@ -71,7 +64,6 @@ void* handle_request(void* arg) {
     int n = fread(buffer, 1, 99 + 2 * strlen(req.text), result);
     buffer[n] = '\0';
     pclose(result);
-    //todo -> check len!!!!
     int words_count = 1;
     char *res = strtok(req.text, " ");
     while (strtok(NULL, " ") && res) {
@@ -79,11 +71,9 @@ void* handle_request(void* arg) {
     }
     sprintf(buffer_res, "ID: %d || Sum: %d\n%s",req.ID, words_count, buffer);
     printf("%s\n", buffer_res);
-    //sleep(5);
     pthread_mutex_lock(&request1_mutex);
     send_message(RESULT, buffer_res);
     pthread_mutex_unlock(&request1_mutex);
-   // printf("RESULT SENT \n");
     free(buffer);
     free(buffer_res);
     return NULL;
@@ -97,30 +87,35 @@ void send_message(uint8_t message_type, char *value) {
     if(value){
         snprintf(msg.value, strlen(value), "%s", value);
     }
-    //msg.fd = client_socket;
     pthread_mutex_lock(&mutex);
-    if (write(client_socket, &msg, sizeof(message_t)) != sizeof(message_t))
-        raise_error("\nError : Could not send message\n");
+    if (write(client_socket, &msg, sizeof(message_t)) != sizeof(message_t)){
+        perror("Could not send message");
+        return;
+    }
     pthread_mutex_unlock(&mutex);
-    //printf("MESSAGE SENT \n");
 }
 
 void register_on_server() {
     send_message(REGISTER, NULL);
 
     uint8_t message_type;
-    if (read(client_socket, &message_type, 1) != 1) raise_error("\n Could not read response message type\n");
+    if (read(client_socket, &message_type, 1) != 1) {
+      perror("Could not read response message type");
+      return;
+    }
 
     switch (message_type) {
         case WRONGNAME:
-            raise_error("Name already in use\n");
+            perror("Name already in use");
+            breakl
         case FAILSIZE:
-            raise_error("Too many clients logged to the server\n");
+            perror("Too many clients logged to the server");
+            break;
         case SUCCESS:
             printf("Logged in successfully\n");
             break;
         default:
-            raise_error("\n Unpredicted REGISTER behavior\n");
+            perror("Unpredicted REGISTER behavior");
     }
 }
 
@@ -130,24 +125,22 @@ void handle_message() {
     request_t req;
     int x = 1;
     while (x) {
-       // printf("GOT STH \n");
-        if (read(client_socket, &message_type, sizeof(uint8_t)) != sizeof(uint8_t))
-            raise_error(" Could not read message type");
-        //printf("HANDLING: %d \n", message_type);
+        if (read(client_socket, &message_type, sizeof(uint8_t)) != sizeof(uint8_t)){
+            perror("Could not read message type");
+            return;
+        }
         switch (message_type) {
 
             case REQUEST:
-                //handle_request();
                 if (read(client_socket, &req, sizeof(request_t)) <= 0) {
-                    raise_error("cannot read length");
+                    perror("cannot read length");
+                    return;
                 }
                 printf("Processing request %d \n",req.ID);
                 pthread_create(&thread, NULL, handle_request, &req);
                 pthread_detach(thread);
-                //sleep(1);
                 break;
             case PING:
-                //printf("GOT PING \n");
                 pthread_mutex_lock(&request1_mutex);
                 send_message(PONG, NULL);
                 pthread_mutex_unlock(&request1_mutex);
@@ -155,7 +148,6 @@ void handle_message() {
             case END:
                 raise(SIGINT);
             default:
-                //printf("Unknown message type %d\n", message_type);
                 break;
         }
     }
@@ -180,7 +172,8 @@ void init(char *connection_type, char *server_ip_path, char *port) {
         c_type = WEB;
         uint16_t port_num = (uint16_t) atoi(port);
         if (port_num < 1024 || port_num > 65535) {
-            raise_error("wrong port");
+            perror("wrong port");
+            return
         }
 
         struct sockaddr_in web_address;
@@ -188,45 +181,49 @@ void init(char *connection_type, char *server_ip_path, char *port) {
 
         web_address.sin_family = AF_INET;
         web_address.sin_addr.s_addr = htonl(
-                INADDR_ANY);  //inet_addr(server_ip_path);//inet_addr("192.168.0.66");
+                INADDR_ANY);
         web_address.sin_port = htons(port_num);
 
         if ((client_socket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-            raise_error("socket");
+            perror("socket");
+            return;
         }
         if (connect(client_socket, (const struct sockaddr *) &web_address, sizeof(web_address)) == -1) {
-            raise_error("connect");
+            perror("connect");
+            return;
         }
         printf("Connected to web socket \n");
 
     } else if (strcmp("LOCAL", connection_type) == 0) {
         c_type = LOCAL;
 
-        //char *unix_path = server_ip_path;
-
-        //todo -> check len of unix_path
-
-        if ((client_socket = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
-            raise_error("\n Could not create local socket\n");
-
+        if ((client_socket = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0){
+            perror("Could not create local socket");
+            return;
+        }
 
         struct sockaddr_un local_address_bind;
         local_address_bind.sun_family = AF_UNIX;
         snprintf(local_address_bind.sun_path, MAX_PATH, "%s", name);
 
-        if (bind(client_socket, (const struct sockaddr *) &local_address_bind, sizeof(local_address_bind)))
-            raise_error("\n Could not bind\n");
+        if (bind(client_socket, (const struct sockaddr *) &local_address_bind, sizeof(local_address_bind))){
+            perror("Could not bind");
+            return;
+        }
 
         struct sockaddr_un local_address;
         local_address.sun_family = AF_UNIX;
         snprintf(local_address.sun_path, MAX_PATH, "%s", server_ip_path);
 
-        if (connect(client_socket, (const struct sockaddr *) &local_address, sizeof(local_address)) == -1)
-            raise_error("\n Could not connect to local socket\n");
+        if (connect(client_socket, (const struct sockaddr *) &local_address, sizeof(local_address)) == -1){
+            perror("Could not connect to local socket");
+            return;
+        }
         printf("Connected to local socket \n");
 
     } else {
-        raise_error("wrong type of argument");
+        perror("wrong type of argument");
+        return;
     }
 }
 
@@ -236,7 +233,9 @@ void clean() {
         unlink(name);
     }
 
-    if (close(client_socket) == -1)
-        fprintf(stderr, "\n Could not close Socket\n");
+    if (close(client_socket) == -1){
+        perror("Could not close Socket");
+        return;
+    }
     unlink(name);
 }
