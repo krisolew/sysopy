@@ -38,7 +38,7 @@ size_t read_whole_file(const char *file_name, char *buffer) {
     }
     size_t read_size;
     if ((read_size = fread(buffer, sizeof(char), size, file)) != size) {
-        perror(stderr, "Unable to read file");
+        perror("Unable to read file");
         return (size_t) -1;
     }
     fclose(file);

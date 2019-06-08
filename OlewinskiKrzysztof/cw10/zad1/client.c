@@ -47,7 +47,6 @@ void* handle_request(void * arg) {
     request_t req;
     strcpy(req.text,req_tmp->text);
     int id = req_tmp ->ID;
-    //free(req_tmp);
 
     char *buffer = calloc(sizeof(char), 100 + 2 * strlen(req.text));
     char *buffer_res = calloc(sizeof(char),100 + 2 * strlen(req.text));
@@ -71,11 +70,11 @@ void* handle_request(void * arg) {
     int len = strlen(buffer_res);
     if (write(client_socket,&len, sizeof(int)) != sizeof(int)){
         perror("Could not write message type");
-        return
+        return (void*) -1;
     }
     if (write(client_socket, buffer_res, len) != len){
         perror("Could not write message type");
-        return;
+        return (void*) -1;
     }
     printf("Result has been sent to server \n");
     pthread_mutex_unlock(&mutex);
@@ -177,7 +176,7 @@ void init(char *connection_type, char *server_ip_path, char *port) {
 
     if (strcmp("WEB", connection_type) == 0) {
         conn_type = WEB;
-        uint32_t ip = inet_addr(server_ip_path);
+        //uint32_t ip = inet_addr(server_ip_path);
         uint16_t port_num = (uint16_t) atoi(port);
         if (port_num < 1024 || port_num > 65535) {
             perror("wrong port");
