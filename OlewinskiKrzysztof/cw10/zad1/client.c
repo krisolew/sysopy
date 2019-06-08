@@ -69,10 +69,14 @@ void* handle_request(void * arg) {
     pthread_mutex_lock(&mutex);
     send_message(RESULT);
     int len = strlen(buffer_res);
-    if (write(client_socket,&len, sizeof(int)) != sizeof(int))
-        raise_error(" Could not write message type");
-    if (write(client_socket, buffer_res, len) != len)
-        raise_error(" Could not write message type");
+    if (write(client_socket,&len, sizeof(int)) != sizeof(int)){
+        perror("Could not write message type");
+        return
+    }
+    if (write(client_socket, buffer_res, len) != len){
+        perror("Could not write message type");
+        return;
+    }
     printf("Result has been sent to server \n");
     pthread_mutex_unlock(&mutex);
     free(buffer);
@@ -82,30 +86,39 @@ void* handle_request(void * arg) {
 
 void send_message(uint8_t message_type) {
     uint16_t message_size = (uint16_t) (strlen(name) + 1);
-    if (write(client_socket, &message_type, TYPE_SIZE) != TYPE_SIZE)
-        raise_error(" Could not write message type");
-    if (write(client_socket, &message_size, LEN_SIZE) != LEN_SIZE)
-        raise_error(" Could not write message size");
+    if (write(client_socket, &message_type, TYPE_SIZE) != TYPE_SIZE){
+        perror("Could not write message type");
+        return;
+    }
+    if (write(client_socket, &message_size, LEN_SIZE) != LEN_SIZE){
+        perror("Could not write message size");
+        return;
+    }
     if (write(client_socket, name, message_size) != message_size)
-        raise_error(" Could not write name message");
+        perror("Could not write name message");
 }
 
 void connect_to_server() {
     send_message(REGISTER);
 
     uint8_t message_type;
-    if (read(client_socket, &message_type, 1) != 1) raise_error("\n Could not read response message type\n");
+    if (read(client_socket, &message_type, 1) != 1) {
+      perror("Could not read response message type");
+      return;
+    }
 
     switch (message_type) {
         case WRONGNAME:
-            raise_error("Name already in use\n");
+            perror("Name already in use");
+            break;
         case FAILSIZE:
-            raise_error("Too many clients logged\n");
+            perror("Too many clients logged");
+            break;
         case SUCCESS:
             printf("Logged in successfully\n");
             break;
         default:
-            raise_error("Impossible \n");
+            perror("Impossible");
     }
 }
 
@@ -115,18 +128,22 @@ void handle_message() {
     request_t *req;
     int x = 1;
     while (x) {
-        if (read(client_socket, &message_type, TYPE_SIZE) != TYPE_SIZE)
-            raise_error(" Could not read message type");
+        if (read(client_socket, &message_type, TYPE_SIZE) != TYPE_SIZE){
+            perror("Could not read message type");
+            return;
+        }
         switch (message_type) {
             case REQUEST:
                 req =(request_t*) calloc(1,sizeof(request_t));
                 uint16_t req_len;
                 if (read(client_socket, &req_len, 2) <= 0) {
-                    raise_error("cannot read length");
+                    perror("cannot read length");
+                    return;
                 }
 
                 if (read(client_socket, req-> text, req_len) < 0) {
-                    raise_error("cannot read whole text");
+                    perror("cannot read whole text");
+                    return;
                 }
                 printf("Processing request ID: %d \n",req->ID);
                 pthread_create(&thread, NULL, handle_request, req);
@@ -146,7 +163,6 @@ void handle_message() {
 
 void handle_signals(int signo) {
     send_message(UNREGISTER);
-    //printf("KILLED BY SIGNAL \n");
     exit(1);
 }
 
@@ -164,7 +180,8 @@ void init(char *connection_type, char *server_ip_path, char *port) {
         uint32_t ip = inet_addr(server_ip_path);
         uint16_t port_num = (uint16_t) atoi(port);
         if (port_num < 1024 || port_num > 65535) {
-            raise_error("wrong port");
+            perror("wrong port");
+            return;
         }
         struct sockaddr_in web_address;
         memset(&web_address, 0, sizeof(struct sockaddr_in));
@@ -172,10 +189,12 @@ void init(char *connection_type, char *server_ip_path, char *port) {
         web_address.sin_addr.s_addr = htonl(INADDR_ANY); //inet_addr(server_ip_path);//inet_addr("192.168.0.66"); //htonl(ip);
         web_address.sin_port = htons(port_num);
         if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-            raise_error("socket");
+            perror("socket");
+            return;
         }
         if (connect(client_socket, (const struct sockaddr *) &web_address, sizeof(web_address)) == -1) {
-            raise_error("connect");
+            perror("connect");
+            return;
         }
         printf("Connected to web socket \n");
 
@@ -187,21 +206,25 @@ void init(char *connection_type, char *server_ip_path, char *port) {
         struct sockaddr_un local_address;
         local_address.sun_family = AF_UNIX;
         snprintf(local_address.sun_path, MAX_PATH, "%s", unix_path);
-        if ((client_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-            raise_error("\n Could not create local socket\n");
+        if ((client_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0){
+            perror("Could not create local socket");
+            return;
+        }
 
-        if (connect(client_socket, (const struct sockaddr *) &local_address, sizeof(local_address)) == -1)
-            raise_error("\n Could not connect to local socket\n");
+        if (connect(client_socket, (const struct sockaddr *) &local_address, sizeof(local_address)) == -1){
+            perror("Could not connect to local socket");
+            return;
+        }
         printf("Connected to local socket \n");
     } else {
-        raise_error("wrong type of argument");
+        perror("wrong type of argument");
     }
 }
 
 void clean() {
     send_message(UNREGISTER);
     if (shutdown(client_socket, SHUT_RDWR) == -1)
-        fprintf(stderr, "\n Could not shutdown Socket\n");
+        perror("Could not shutdown Socket");
     if (close(client_socket) == -1)
-        fprintf(stderr, "\n Could not close Socket\n");
+        perror("Could not close Socket");
 }
