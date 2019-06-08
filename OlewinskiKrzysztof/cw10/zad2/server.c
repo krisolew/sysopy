@@ -16,7 +16,7 @@
 size_t get_file_size(const char *file_name) {
     int fd;
     if ((fd = open(file_name, O_RDONLY)) == -1) {
-        fprintf(stderr, "Unable to open file for size \n");
+        perror("Unable to open file for size");
         return (size_t) -1;
     }
     struct stat stats;
@@ -33,12 +33,12 @@ size_t read_whole_file(const char *file_name, char *buffer) {
     }
     FILE *file;
     if ((file = fopen(file_name, "r")) == NULL) {
-        fprintf(stderr, "Unable to open file \n");
+        perror("Unable to open file");
         return (size_t) -1;
     }
     size_t read_size;
     if ((read_size = fread(buffer, sizeof(char), size, file)) != size) {
-        fprintf(stderr, "Unable to read file\n");
+        perror("Unable to read file");
         return (size_t) -1;
     }
     fclose(file);
@@ -92,22 +92,23 @@ int clients_amount = 0;
 
 int main(int argc, char *argv[]) {
     srand(time(NULL));
-    if (argc != 3)
-        raise_error("\nUsage: %s <port number> <unix path>\n");
-    if (atexit(clean) == -1)
-        raise_error(" Could not set AtExit\n");
+    if (argc != 3){
+        perror("Expexted 2 argumants");
+        return -1;
+    }
+    atexit(clean);
 
     init(argv[1], argv[2]);
 
     struct epoll_event event;
     int x = 1;
     while (x) {
-        if (epoll_wait(epoll, &event, 1, -1) == -1)
-            raise_error(" epoll_wait failed\n");
+        if (epoll_wait(epoll, &event, 1, -1) == -1){
+            perror("epoll_wait failed");
+            return -1;
+        }
         handle_message(event.data.fd);
-
     }
-
 }
 
 void *ping_clients(void *arg) {
@@ -122,8 +123,10 @@ void *ping_clients(void *arg) {
                 delete_client(i--);
             } else {
                 int socket = clients[i].connect_type == WEB ? web_socket : local_socket;
-                if (sendto(socket, &message_type, 1, 0, clients[i].sockaddr, clients[i].socklen) != 1)
-                    raise_error(" Could not send ping to client");
+                if (sendto(socket, &message_type, 1, 0, clients[i].sockaddr, clients[i].socklen) != 1){
+                    perror("Could not send ping to client");
+                    return;
+                }
                 clients[i].active_counter++;
             }
         }
@@ -164,16 +167,17 @@ void *handler_terminal(void *arg) {
 
                 int socket = clients[i].connect_type == WEB ? web_socket : local_socket;
                 if (sendto(socket, &message_type, 1, 0, clients[i].sockaddr, clients[i].socklen) != 1) {
-                    raise_error("cannot sendto");
+                    perror("cannot sendto");
+                    return;
                 }
                 if (sendto(socket, &req, sizeof(request_t), 0, clients[i].sockaddr, clients[i].socklen) !=
                     sizeof(request_t)) {
-                    raise_error("cannot sendto");
+                    perror("cannot sendto");
+                    return;
                 }
                 sent = 1;
                 clients[i].reserved++;
                 break;
-
             }
         }
         if (!sent) {
@@ -181,17 +185,17 @@ void *handler_terminal(void *arg) {
             if (clients[i].reserved > -1) {
                 int socket = clients[i].connect_type == WEB ? web_socket : local_socket;
                 if (sendto(socket, &message_type, 1, 0, clients[i].sockaddr, clients[i].socklen) != 1) {
-                    raise_error("cannot sendto");
+                    perror("cannot sendto");
+                    return;
                 }
                 if (sendto(socket, &req, sizeof(request_t), 0, clients[i].sockaddr, clients[i].socklen) !=
                     sizeof(request_t)) {
-                    raise_error("cannot sendto");
+                    perror("cannot sendto");
+                    return;
                 }
                 clients[i].reserved++;
             }
-
         }
-
     }
     return NULL;
 }
@@ -201,10 +205,11 @@ void handle_message(int socket) {
     socklen_t socklen = sizeof(struct sockaddr);
     message_t msg;
 
-    if (recvfrom(socket, &msg, sizeof(message_t), 0, sockaddr, &socklen) != sizeof(message_t))
-        raise_error("Could not receive new message\n");
-    //printf("RECEIVED msg from socket: %d \n", socket);
-    // printf("MSG: %d, %s, %d, socket: %d \n", msg.connect_type, msg.name, msg.message_type, msg.fd);
+    if (recvfrom(socket, &msg, sizeof(message_t), 0, sockaddr, &socklen) != sizeof(message_t)){
+        perror("Could not receive new message");
+        return;
+    }
+
     switch (msg.message_type) {
         case REGISTER: {
             register_client(socket, msg, sockaddr, socklen);
@@ -224,7 +229,6 @@ void handle_message(int socket) {
                 }
             }
 
-            //printf("RES \n");
             printf("Result: %s \n", msg.value);
             printf("from: %s \n", msg.name);
 
@@ -239,10 +243,8 @@ void handle_message(int socket) {
             break;
         }
         default:
-            //printf("Unknown message type\n");
             break;
     }
-
 }
 
 void register_client(int socket, message_t msg, struct sockaddr *sockaddr, socklen_t socklen) {
@@ -250,15 +252,19 @@ void register_client(int socket, message_t msg, struct sockaddr *sockaddr, sockl
     pthread_mutex_lock(&mutex);
     if (clients_amount == CLIENT_MAX) {
         message_type = FAILSIZE;
-        if (sendto(socket, &message_type, 1, 0, sockaddr, socklen) != 1)
-            raise_error(" Could not write FAILSIZE message to client \"%s\"\n");
+        if (sendto(socket, &message_type, 1, 0, sockaddr, socklen) != 1){
+            perror("Could not write FAILSIZE message to client");
+            return;
+        }
         free(sockaddr);
     } else {
         int exists = in(msg.name, clients, (size_t) clients_amount, sizeof(Client), (__compar_fn_t) cmp_name);
         if (exists != -1) {
             message_type = WRONGNAME;
-            if (sendto(socket, &message_type, 1, 0, sockaddr, socklen) != 1)
-                raise_error(" Could not write WRONGNAME message to client \"%s\"\n");
+            if (sendto(socket, &message_type, 1, 0, sockaddr, socklen) != 1){
+                raise_error("Could not write WRONGNAME message to client");
+                return;
+            }
             free(sockaddr);
         } else {
             printf("REGISTERING \n");
@@ -272,8 +278,10 @@ void register_client(int socket, message_t msg, struct sockaddr *sockaddr, sockl
             message_type = SUCCESS;
 
             strcpy(clients[clients_amount++].name, msg.name);
-            if (sendto(socket, &message_type, 1, 0, sockaddr, socklen) != 1)
-                raise_error(" Could not write SUCCESS message to client \"%s\"\n");
+            if (sendto(socket, &message_type, 1, 0, sockaddr, socklen) != 1){
+                perror("Could not write SUCCESS message to client");
+                return;
+            }
         }
     }
     pthread_mutex_unlock(&mutex);
@@ -327,40 +335,55 @@ void init(char *port, char *path) {
     web_address.sin_addr.s_addr = htonl(INADDR_ANY);
     web_address.sin_port = htons(port_num);
 
-    if ((web_socket = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-        raise_error(" Could not create web socket\n");
+    if ((web_socket = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+        perror("Could not create web socket");
+        return;
+    }
 
-    if (bind(web_socket, (const struct sockaddr *) &web_address, sizeof(web_address)))
-        raise_error(" Could not bind web socket\n");
+    if (bind(web_socket, (const struct sockaddr *) &web_address, sizeof(web_address))){
+        perror("Could not bind web socket");
+        return;
+    }
 
     //******************* LOCAL **********************
     struct sockaddr_un local_address;
     local_address.sun_family = AF_UNIX;
     sprintf(local_address.sun_path, "%s", local_path);
 
-    if ((local_socket = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
-        raise_error(" Could not create local socket\n");
+    if ((local_socket = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0){
+        perror("Could not create local socket");
+        return;
+    }
 
-    if (bind(local_socket, (const struct sockaddr *) &local_address, sizeof(local_address)))
-        raise_error(" Could not bind local socket\n");
+    if (bind(local_socket, (const struct sockaddr *) &local_address, sizeof(local_address))){
+        perror("Could not bind local socket");
+        return;
+     }
 
     //****************** EPOLL ***********************
     struct epoll_event event;
     event.events = EPOLLIN | EPOLLPRI;
-    if ((epoll = epoll_create1(0)) == -1)
-        raise_error(" Could not create epoll\n");
+    if ((epoll = epoll_create1(0)) == -1){
+        perror("Could not create epoll");
+        return;
+    }
     event.data.fd = web_socket;
-    if (epoll_ctl(epoll, EPOLL_CTL_ADD, web_socket, &event) == -1)
-        raise_error(" Could not add Web Socket to epoll\n");
+    if (epoll_ctl(epoll, EPOLL_CTL_ADD, web_socket, &event) == -1){
+        perror("Could not add Web Socket to epoll");
+        return;
+    }
     event.data.fd = local_socket;
-    if (epoll_ctl(epoll, EPOLL_CTL_ADD, local_socket, &event) == -1)
-        raise_error(" Could not add Local Socket to epoll\n");
-
-
-    if (pthread_create(&ping, NULL, ping_clients, NULL) != 0)
-        raise_error(" Could not create Pinger Thread");
-    if (pthread_create(&command, NULL, handler_terminal, NULL) != 0)
-        raise_error(" Could not create Commander Thread");
+    if (epoll_ctl(epoll, EPOLL_CTL_ADD, local_socket, &event) == -1){
+        perror("Could not add Local Socket to epoll");
+        return;
+    }
+    if (pthread_create(&ping, NULL, ping_clients, NULL) != 0){
+        perror("Could not create Pinger Thread");
+        return;
+    }
+    if (pthread_create(&command, NULL, handler_terminal, NULL) != 0){
+        perror("Could not create Commander Thread");
+    }
 }
 
 void clean() {
@@ -374,17 +397,18 @@ void clean() {
             uint8_t message_type = END;
             int socket = clients[i].connect_type == WEB ? web_socket : local_socket;
             if (sendto(socket, &message_type, 1, 0, clients[i].sockaddr, clients[i].socklen) != 1) {
-                raise_error("cannot sendto");
+                perror("cannot sendto");
+                return;
             }
         }
     }
 
     if (close(web_socket) == -1)
-        fprintf(stderr, " Could not close Web Socket\n");
+        perror("Could not close Web Socket");
     if (close(local_socket) == -1)
-        fprintf(stderr, " Could not close Local Socket\n");
+        perror("Could not close Local Socket");
     if (unlink(local_path) == -1)
-        fprintf(stderr, " Could not unlink Unix Path\n");
+        perror("Could not unlink Unix Path");
     if (close(epoll) == -1)
-        fprintf(stderr, " Could not close epoll\n");
+        perror("Could not close epoll");
 }
