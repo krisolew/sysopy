@@ -16,7 +16,7 @@
 size_t get_file_size(const char *file_name) {
     int fd;
     if ((fd = open(file_name, O_RDONLY)) == -1) {
-        fprintf(stderr, "Unable to open file for size \n");
+        perror("Unable to open file for size");
         return (size_t) -1;
     }
     struct stat stats;
@@ -33,12 +33,12 @@ size_t read_whole_file(const char *file_name, char *buffer) {
     }
     FILE *file;
     if ((file = fopen(file_name, "r")) == NULL) {
-        fprintf(stderr, "Unable to open file \n");
+        perror("Unable to open file");
         return (size_t) -1;
     }
     size_t read_size;
     if ((read_size = fread(buffer, sizeof(char), size, file)) != size) {
-        fprintf(stderr, "Unable to read file\n");
+        perror(stderr, "Unable to read file");
         return (size_t) -1;
     }
     fclose(file);
@@ -98,9 +98,12 @@ int clients_amount = 0;
 int main(int argc, char *argv[]) {
     srand(time(NULL));
     if (argc != 3)
-        raise_error("\nUsage: %s <port number> <unix path>\n");
-    if (atexit(clean) == -1)
-        raise_error(" Could not set AtExit\n");
+    {
+        perror("Expexted 2 arguments");
+        return -1;
+    }
+
+    atexit(clean);
 
     init(argv[1], argv[2]);
 
@@ -108,17 +111,17 @@ int main(int argc, char *argv[]) {
     int x = 1;
     while (x) {
         if (epoll_wait(epoll, &event, 1, -1) == -1)
-            raise_error(" epoll_wait failed\n");
-        //printf("A JA WIEM PO CO? \n");
+        {
+            perror("epoll_wait failed");
+            return -1;
+        }
+
         if (event.data.fd < 0)
             handle_connection(-event.data.fd);
         else
             handle_message(event.data.fd);
     }
-
-
 }
-
 
 void *ping_routine(void *arg) {
     uint8_t message_type = PING;
@@ -132,10 +135,11 @@ void *ping_routine(void *arg) {
                 delete_client(i--);
             } else {
                 if (write(clients[i].fd, &message_type, 1) != 1)
-                    raise_error(" Could not send ping to client");
-
+                {
+                   perror("Could not send ping to client");
+                   exit(-1);
+                }
                 clients[i].active_counter++;
-                //printf("INC UN: %d \n",clients[i].active_counter);
             }
         }
         pthread_mutex_unlock(&mutex);
@@ -146,15 +150,17 @@ void *ping_routine(void *arg) {
 
 void send_msg(int type, int len, request_t *req, int i) {
     if (write(clients[i].fd, &type, 1) != 1) {
-        raise_error("cannot send");
+        perror("cannot send");
+        return;
     }
     if (write(clients[i].fd, &len, 2) != 2) {
-        raise_error("cannot send");
+        perror("cannot send");
+        return;
     }
     if (write(clients[i].fd, req, len) != len) {
-        raise_error("cannot send");
+        perror("cannot send");
+        return;
     }
-
 }
 
 void *hendle_terminal(void *arg) {
@@ -216,14 +222,17 @@ void *hendle_terminal(void *arg) {
 
 void handle_connection(int socket) {
     int client = accept(socket, NULL, NULL);
-    if (client == -1) raise_error(" Could not accept new client");
+    if (client == -1) {
+      perror("Could not accept new client");
+      return;
+    }
 
     struct epoll_event event;
     event.events = EPOLLIN | EPOLLPRI;
     event.data.fd = client;
 
     if (epoll_ctl(epoll, EPOLL_CTL_ADD, client, &event) == -1)
-        raise_error(" Could not add new client to epoll");
+        perror("Could not add new client to epoll");
 
 }
 
@@ -231,33 +240,49 @@ void handle_message(int socket) {
     uint8_t message_type;
     uint16_t message_size;
 
-    if (read(socket, &message_type, TYPE_SIZE) != TYPE_SIZE) raise_error(" Could not read message type\n");
-    if (read(socket, &message_size, LEN_SIZE) != LEN_SIZE) raise_error(" Could not read message size\n");
+    if (read(socket, &message_type, TYPE_SIZE) != TYPE_SIZE) {
+      perror("Could not read message type");
+      return;
+    }
+    if (read(socket, &message_size, LEN_SIZE) != LEN_SIZE) {
+      perror("Could not read message size");
+      return;
+    }
     char *client_name = malloc(message_size);
 
     switch (message_type) {
         case REGISTER: {
-            if (read(socket, client_name, message_size) != message_size)
-                raise_error(" Could not read register message name\n");
+            if (read(socket, client_name, message_size) != message_size) {
+                perror(" Could not read register message name");
+                return;
+            }
             register_client(client_name, socket);
             break;
         }
         case UNREGISTER: {
-            if (read(socket, client_name, message_size) != message_size)
-                raise_error(" Could not read unregister message name\n");
+            if (read(socket, client_name, message_size) != message_size) {
+                perror(" Could not read unregister message name");
+                return;
+            }
             unregister_client(client_name);
             break;
         }
         case RESULT: {
             printf("Received result... \n");
             char result[10240];
-            if (read(socket, client_name, message_size) < 0)
-                raise_error("read res name");
+            if (read(socket, client_name, message_size) < 0){
+                perror("read res name");
+                return;
+            }
             int size;
-            if (read(socket, &size, sizeof(int)) < 0)
-                raise_error("size of res");
-            if (read(socket, result, size) < 0)
-                raise_error("result");
+            if (read(socket, &size, sizeof(int)) < 0) {
+                perror("size of res");
+                return;
+            }
+            if (read(socket, result, size) < 0) {
+                perror("result");
+                return;
+            }
 
             printf("Computations from: %s :\n%s \n",client_name, result);
 
@@ -272,8 +297,10 @@ void handle_message(int socket) {
             break;
         }
         case PONG: {
-            if (read(socket, client_name, message_size) != message_size)
-                raise_error(" Could not read ping return message\n");
+            if (read(socket, client_name, message_size) != message_size){
+                perror(" Could not read ping return message");
+                return;
+            }
             pthread_mutex_lock(&mutex);
             int i = in(client_name, clients, (size_t) clients_amount, sizeof(Client), (__compar_fn_t) cmp_name);
             if (i >= 0) clients[i].active_counter = clients[i].active_counter == 0 ? 0 : clients[i].active_counter-1;
@@ -292,15 +319,19 @@ void register_client(char *client_name, int socket) {
     pthread_mutex_lock(&mutex);
     if (clients_amount == CLIENT_MAX) {
         message_type = FAILSIZE;
-        if (write(socket, &message_type, 1) != 1)
-            raise_error(" Could not write FAILSIZE message to client \"%s\"\n");
+        if (write(socket, &message_type, 1) != 1) {
+            perror("Could not write FAILSIZE message to client");
+            return;
+        }
         delete_socket(socket);
     } else {
         int exists = in(client_name, clients, (size_t) clients_amount, sizeof(Client), (__compar_fn_t) cmp_name);
         if (exists != -1) {
             message_type = WRONGNAME;
-            if (write(socket, &message_type, 1) != 1)
-                raise_error(" Could not write WRONGNAME message to client \"%s\"\n");
+            if (write(socket, &message_type, 1) != 1){
+                perror("Could not write WRONGNAME message to client");
+                return;
+            }
             delete_socket(socket);
         } else {
             clients[clients_amount].fd = socket;
@@ -309,8 +340,10 @@ void register_client(char *client_name, int socket) {
             clients[clients_amount].reserved = 0;
             strcpy(clients[clients_amount++].name, client_name);
             message_type = SUCCESS;
-            if (write(socket, &message_type, 1) != 1)
-                raise_error(" Could not write SUCCESS message to client \"%s\"\n");
+            if (write(socket, &message_type, 1) != 1){
+                perror("Could not write SUCCESS message to client");
+                return;
+            }
         }
     }
     pthread_mutex_unlock(&mutex);
@@ -338,17 +371,24 @@ void delete_client(int i) {
 }
 
 void delete_socket(int socket) {
-    if (epoll_ctl(epoll, EPOLL_CTL_DEL, socket, NULL) == -1)
-        raise_error(" Could not remove client's socket from epoll\n");
+    if (epoll_ctl(epoll, EPOLL_CTL_DEL, socket, NULL) == -1) {
+        perror("Could not remove client's socket from epoll");
+        return;
+    }
 
-    if (shutdown(socket, SHUT_RDWR) == -1) raise_error(" Could not shutdown client's socket\n");
+    if (shutdown(socket, SHUT_RDWR) == -1){
+      perror("Could not shutdown client's socket");
+      return;
+    }
 
-    if (close(socket) == -1) raise_error(" Could not close client's socket\n");
+    if (close(socket) == -1){
+      perror("Could not close client's socket");
+      return;
+    }
 }
 
 void handle_signal(int signo) {
-    //clean();
-    printf("\nSIGINT\n");
+    printf("SIGINT\n");
     exit(1);
 }
 
@@ -374,43 +414,64 @@ void init(char *port, char *path) {
     web_address.sin_addr.s_addr =htonl(INADDR_ANY); //inet_addr("path"); //inet_addr("192.168.0.66"); //htonl(INADDR_ANY);
     web_address.sin_port = htons(port_num);
 
-    if ((web_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        raise_error(" Could not create web socket\n");
+    if ((web_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+        perror("Could not create web socket");
+        return;
+    }
 
-    if (bind(web_socket, (const struct sockaddr *) &web_address, sizeof(web_address)))
-        raise_error(" Could not bind web socket\n");
+    if (bind(web_socket, (const struct sockaddr *) &web_address, sizeof(web_address))){
+        perror("Could not bind web socket");
+        return;
+    }
 
-    if (listen(web_socket, 64) == -1)
-        raise_error(" Could not listen to web socket\n");
+    if (listen(web_socket, 64) == -1){
+        perror("Could not listen to web socket");
+        return;
+    }
 
     struct sockaddr_un local_address;
     local_address.sun_family = AF_UNIX;
 
     sprintf(local_address.sun_path, "%s", local_path);
 
-    if ((local_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-        raise_error(" Could not create local socket\n");
-    if (bind(local_socket, (const struct sockaddr *) &local_address, sizeof(local_address)))
-        raise_error(" Could not bind local socket\n");
-    if (listen(local_socket, 64) == -1)
-        raise_error(" Could not listen to local socket\n");
+    if ((local_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0){
+        perror("Could not create local socket");
+        return;
+    }
+    if (bind(local_socket, (const struct sockaddr *) &local_address, sizeof(local_address))){
+        perror(" Could not bind local socket");
+        return;
+    }
+    if (listen(local_socket, 64) == -1){
+        perror("Could not listen to local socket");
+        return;
+    }
 
     struct epoll_event event;
     event.events = EPOLLIN | EPOLLPRI;
-    if ((epoll = epoll_create1(0)) == -1)
-        raise_error(" Could not create epoll\n");
+    if ((epoll = epoll_create1(0)) == -1){
+        perror("Could not create epoll");
+        return;
+    }
     event.data.fd = -web_socket;
-    if (epoll_ctl(epoll, EPOLL_CTL_ADD, web_socket, &event) == -1)
-        raise_error(" Could not add Web Socket to epoll\n");
+    if (epoll_ctl(epoll, EPOLL_CTL_ADD, web_socket, &event) == -1){
+        perror("Could not add Web Socket to epoll");
+        return;
+    }
     event.data.fd = -local_socket;
-    if (epoll_ctl(epoll, EPOLL_CTL_ADD, local_socket, &event) == -1)
-        raise_error(" Could not add Local Socket to epoll\n");
+    if (epoll_ctl(epoll, EPOLL_CTL_ADD, local_socket, &event) == -1){
+        perror("Could not add Local Socket to epoll");
+        return;
+    }
 
-
-    if (pthread_create(&ping, NULL, ping_routine, NULL) != 0)
-        raise_error(" Could not create Pinger Thread");
-    if (pthread_create(&command, NULL, hendle_terminal, NULL) != 0)
-        raise_error(" Could not create Commander Thread");
+    if (pthread_create(&ping, NULL, ping_routine, NULL) != 0){
+        perror("Could not create Pinger Thread");
+        return;
+    }
+    if (pthread_create(&command, NULL, hendle_terminal, NULL) != 0){
+        perror("Could not create Commander Thread");
+        return;
+    }
 }
 
 void clean() {
@@ -418,11 +479,11 @@ void clean() {
     pthread_cancel(ping);
     pthread_cancel(command);
     if (close(web_socket) == -1)
-        fprintf(stderr, " Could not close Web Socket\n");
+        perror("Could not close Web Socket");
     if (close(local_socket) == -1)
-        fprintf(stderr, " Could not close Local Socket\n");
+        perror("Could not close Local Socket");
     if (unlink(local_path) == -1)
-        fprintf(stderr, " Could not unlink Unix Path\n");
+        perror("Could not unlink Unix Path");
     if (close(epoll) == -1)
-        fprintf(stderr, " Could not close epoll\n");
+        perror("Could not close epoll");
 }
