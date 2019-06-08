@@ -107,7 +107,7 @@ void register_on_server() {
     switch (message_type) {
         case WRONGNAME:
             perror("Name already in use");
-            breakl
+            break;
         case FAILSIZE:
             perror("Too many clients logged to the server");
             break;
@@ -173,7 +173,7 @@ void init(char *connection_type, char *server_ip_path, char *port) {
         uint16_t port_num = (uint16_t) atoi(port);
         if (port_num < 1024 || port_num > 65535) {
             perror("wrong port");
-            return
+            return;
         }
 
         struct sockaddr_in web_address;

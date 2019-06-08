@@ -125,7 +125,7 @@ void *ping_clients(void *arg) {
                 int socket = clients[i].connect_type == WEB ? web_socket : local_socket;
                 if (sendto(socket, &message_type, 1, 0, clients[i].sockaddr, clients[i].socklen) != 1){
                     perror("Could not send ping to client");
-                    return;
+                    return (void *) -1;
                 }
                 clients[i].active_counter++;
             }
@@ -168,12 +168,12 @@ void *handler_terminal(void *arg) {
                 int socket = clients[i].connect_type == WEB ? web_socket : local_socket;
                 if (sendto(socket, &message_type, 1, 0, clients[i].sockaddr, clients[i].socklen) != 1) {
                     perror("cannot sendto");
-                    return;
+                    return (void *) -1;
                 }
                 if (sendto(socket, &req, sizeof(request_t), 0, clients[i].sockaddr, clients[i].socklen) !=
                     sizeof(request_t)) {
                     perror("cannot sendto");
-                    return;
+                    return (void *) -1;
                 }
                 sent = 1;
                 clients[i].reserved++;
@@ -186,12 +186,12 @@ void *handler_terminal(void *arg) {
                 int socket = clients[i].connect_type == WEB ? web_socket : local_socket;
                 if (sendto(socket, &message_type, 1, 0, clients[i].sockaddr, clients[i].socklen) != 1) {
                     perror("cannot sendto");
-                    return;
+                    return (void *) -1;
                 }
                 if (sendto(socket, &req, sizeof(request_t), 0, clients[i].sockaddr, clients[i].socklen) !=
                     sizeof(request_t)) {
                     perror("cannot sendto");
-                    return;
+                    return (void *) -1;
                 }
                 clients[i].reserved++;
             }
@@ -262,7 +262,7 @@ void register_client(int socket, message_t msg, struct sockaddr *sockaddr, sockl
         if (exists != -1) {
             message_type = WRONGNAME;
             if (sendto(socket, &message_type, 1, 0, sockaddr, socklen) != 1){
-                raise_error("Could not write WRONGNAME message to client");
+                perror("Could not write WRONGNAME message to client");
                 return;
             }
             free(sockaddr);
