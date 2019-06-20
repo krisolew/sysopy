@@ -9,14 +9,12 @@ int maxTruckCapacity;
 int currentTruckCapacity;
 int maxWeight;
 
-key_t key;
 int shmID = -1;
 Belt *belt;
 Box box;
 int semID = -1;
 int semTaken = 0;
 int status;
-int queue;
 
 sem_t *trucker_sem;
 sem_t *loaders_sem;
@@ -73,8 +71,6 @@ int main(int argc, char *argv[])
 
 void prepare_memory()
 {
-   key = get_belt_key();
-
    if ((shmID = shm_open("belt_memory", O_CREAT | O_EXCL | O_RDWR, 0666)) == -1)
    {
       perror("Cannot create shared memory");
@@ -95,15 +91,6 @@ void prepare_memory()
    }
    belt = (Belt *) add;
    belt_init(maxWeight, maxBeltCapacity, belt);
-
-   struct mq_attr queue_attr;
-   queue_attr.mq_maxmsg = 10;
-   queue_attr.mq_msgsize = 10;
-
-   if ((queue = mq_open("/pidQueue",O_CREAT | O_EXCL | O_RDONLY | O_NONBLOCK, 0666, &queue_attr)) == -1){
-      perror("Canot create queue");
-      return;
-   }
 }
 
 void prepare_semaphores()
@@ -189,24 +176,6 @@ void int_handler(int signo)
 
 void finish_work()
 {
-   char pid[10];
-   int i;
-   while(mq_receive(queue, pid, 10, NULL) != -1){
-      i = strtol(pid,NULL,10);
-      kill(i, SIGINT);
-   }
-
-   if (mq_close(queue) == -1)
-   {
-      perror("Cannot close queue");
-      return;
-   }
-   if (mq_unlink("/pidQueue") == -1)
-   {
-      perror("Cannot remove queue");
-      return;
-   }
-
    if (belt_sem != NULL && belt != NULL)
    {
       status = belt_pop(belt, &box);
